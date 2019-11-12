@@ -1,2 +1,2 @@
-# GitPaulo.github.io
-My website :)
+## Website displaying my resume.
+View it [here](https://gitpaulo.github.io/).
