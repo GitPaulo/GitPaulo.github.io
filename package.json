@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/GitPaulo/GitPaulo.github.io#readme",
   "dependencies": {
-    "normalize.css": "^8.0.1"
+    "normalize.css": "^8.0.1",
+    "pdfjs-dist": "^2.2.228"
   }
 }
