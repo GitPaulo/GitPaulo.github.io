@@ -1,3 +1,4 @@
+const Toastify = require("toastify-js");
 const isMobile = require("is-mobile");
 const pdfjsLib = require("pdfjs-dist");
 const loadingTask = pdfjsLib.getDocument("./resources/paulo_resume.pdf");
@@ -14,6 +15,18 @@ loadingTask.promise.then((_pdf) => {
     if (isMobile()) {
       renderDocument(page, (scale = MOBILE_SCALE));
       document.getElementById("btn_label").innerText = "📱 GitHub";
+      Toastify({
+        text: "Hi 📱, use zoom buttons!",
+        duration: 2000,
+        close: true,
+        gravity: "top", // `top` or `bottom`
+        position: "center", // `left`, `center` or `right`
+        stopOnFocus: true, // Prevents dismissing of toast on hover
+        style: {
+          background:
+            "linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(78,77,77,1) 41%, rgba(0,0,0,1) 100%);",
+        },
+      }).showToast();
     } else {
       renderDocument(page, (scale = BROWSER_SCALE));
     }
