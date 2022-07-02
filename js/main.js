@@ -63,6 +63,7 @@ function zoomOut(cscale) {
 
 function center() {
   document.getElementById('canvas_wrap').scrollLeft = (document.getElementById('resume_canvas').offsetWidth - document.getElementById('canvas_wrap').offsetWidth) / 2
+  document.getElementById('canvas_wrap').scrollTop = 0;
 }
 
 function renderDocument(page, scale) {
