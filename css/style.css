@@ -51,6 +51,11 @@ body {
  BUTTON STYLING
 */
 
+.zoom_btn:hover {
+  background-color: gainsboro;
+  cursor: pointer;
+}
+
 .btn {
   position: relative;
   color: rgb(255, 255, 255);
