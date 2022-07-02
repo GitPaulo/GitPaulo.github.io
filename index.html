@@ -1,35 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Paulo's Resume</title>
-    <!-- favicon is scuffed -->
-    <link
-      rel="shortcut icon"
-      href="build/assets/favicon.ico"
-      type="image/x-icon"
-    />
-    <script src="build/main.bundle.js"></script>
-  </head>
-  <body>
-    <div id="button_area">
-      <div
-        class="btn btn-one"
-        onclick="window.location.href = 'https://github.com/GitPaulo';"
-      >
-        <span id="btn_label">Return To </span>
-      </div>
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Paulo's Resume</title>
+  <!-- favicon is scuffed -->
+  <link rel="shortcut icon" href="build/assets/favicon.ico" type="image/x-icon" />
+  <script src="build/main.bundle.js"></script>
+</head>
+
+<body>
+  <div id="button_area">
+    <div class="btn btn-one" onclick="window.location.href = 'https://github.com/GitPaulo';">
+      <span id="btn_label">Return To </span>
     </div>
-    <div id="controls">
-      <button id="b1" onclick="zoomIn(0.25)">🔍+</button>
-      <button id="b2" onclick="zoomOut(0.25)">🔍-</button>
+  </div>
+  <div id="controls">
+    <button id="b1" onclick="zoomIn(0.25)">🔍+</button>
+    <button id="b2" onclick="center()">🎯</button>
+    <button id="b3" onclick="zoomOut(0.25)">🔍-</button>
+  </div>
+  <div id="canvas_wrap">
+    <canvas id="resume_canvas"></canvas>
+    <div id="too_small_message">
+      <h1>⚠️ Too small!</h1>
     </div>
-    <div id="canvas_wrap">
-      <canvas id="resume_canvas"></canvas>
-      <div id="too_small_message">
-        <h1>⚠️ Too small!</h1>
-      </div>
-    </div>
-  </body>
+  </div>
+</body>
+
 </html>

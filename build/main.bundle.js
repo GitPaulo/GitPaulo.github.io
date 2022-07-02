@@ -17558,15 +17558,18 @@ loadingTask.promise.then((_pdf) => {
       notify("👋 Hi 📱, please use zoom buttons!", () => {
         document.getElementById("b1").style.border = "1px solid black";
         document.getElementById("b2").style.border = "1px solid black";
+        document.getElementById("b3").style.border = "1px solid black";
       });
     } else {
       renderDocument(page, (scale = BROWSER_SCALE));
       document.getElementById("btn_label").innerText = "Return to GitHub";
       document.getElementById("b1").style.border = "2px solid red";
       document.getElementById("b2").style.border = "2px solid red";
+      document.getElementById("b3").style.border = "2px solid red";
       notify("👋 Hey there, please use the zoom buttons!", () => {
         document.getElementById("b1").style.border = "1px solid black";
         document.getElementById("b2").style.border = "1px solid black";
+        document.getElementById("b3").style.border = "1px solid black";
       });
     }
   });
@@ -17592,6 +17595,10 @@ function zoomOut(cscale) {
   } else {
     pdf.getPage(1).then((page) => renderDocument(page, (scale -= cscale)));
   }
+}
+
+function center() {
+  document.getElementById('canvas_wrap').scrollLeft = (document.getElementById('resume_canvas').offsetWidth - document.getElementById('canvas_wrap').offsetWidth) / 2
 }
 
 function renderDocument(page, scale) {
@@ -17633,6 +17640,7 @@ window.matchMedia("(max-width: 750px)").addEventListener("change", (media) => {
 // for webpack
 window.zoomIn = zoomIn;
 window.zoomOut = zoomOut;
+window.center = center;
 
 })();
 
