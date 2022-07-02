@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Paulo's Resume</title>
+    <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon" />
     <script src="build/main.bundle.js"></script>
   </head>
   <body>
@@ -16,8 +17,8 @@
       </div>
     </div>
     <div id="controls">
-      <button onclick="zoomIn(0.25)">🔍+</button>
-      <button onclick="zoomOut(0.25)">🔍-</button>
+      <button id="b1" onclick="zoomIn(0.25)">🔍+</button>
+      <button id="b2" onclick="zoomOut(0.25)">🔍-</button>
     </div>
     <div id="canvas_wrap">
       <canvas id="resume_canvas"></canvas>

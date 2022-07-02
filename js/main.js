@@ -1,7 +1,8 @@
-const Toastify = require("toastify-js");
 // css
 require("../css/style.css");
+
 // libs
+const Toastify = require("toastify-js");
 const isMobile = require("is-mobile");
 const pdfjsLib = require("pdfjs-dist");
 const loadingTask = pdfjsLib.getDocument("./resources/paulo_resume.pdf");
@@ -18,19 +19,18 @@ loadingTask.promise.then((_pdf) => {
     if (isMobile()) {
       renderDocument(page, (scale = MOBILE_SCALE));
       document.getElementById("btn_label").innerText = "📱 GitHub";
+      notify("👋 Hi 📱, please use zoom buttons!", () => {
+        document.getElementById("b1").style.border = "1px solid black";
+        document.getElementById("b2").style.border = "1px solid black";
+      });
     } else {
       renderDocument(page, (scale = BROWSER_SCALE));
-      document.getElementById("controls").style.border = "2px solid red";
-      Toastify({
-        text: "👋 Hey there, use the zoom buttons!",
-        duration: 2500,
-        gravity: "top", // `top` or `bottom`
-        position: "center", // `left`, `center` or `right`
-        stopOnFocus: true, // Prevents dismissing of toast on hover
-        callback: () => {
-          document.getElementById("controls").style.border = "none";
-        },
-      }).showToast();
+      document.getElementById("b1").style.border = "2px solid red";
+      document.getElementById("b2").style.border = "2px solid red";
+      notify("👋 Hey there, please use the zoom buttons!", () => {
+        document.getElementById("b1").style.border = "1px solid black";
+        document.getElementById("b2").style.border = "1px solid black";
+      });
     }
   });
 });
@@ -68,6 +68,17 @@ function renderDocument(page, scale) {
     canvasContext: context,
     viewport,
   });
+}
+
+function notify(message, cb) {
+  Toastify({
+    text: message,
+    duration: 2000,
+    gravity: "top", // `top` or `bottom`
+    position: "center", // `left`, `center` or `right`
+    stopOnFocus: true, // Prevents dismissing of toast on hover
+    callback: cb,
+  }).showToast();
 }
 
 // media scale
