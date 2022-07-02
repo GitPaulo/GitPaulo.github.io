@@ -21,11 +21,15 @@ loadingTask.promise.then((_pdf) => {
 });
 
 function zoomIn(cscale) {
-  pdf.getPage(1).then((page) => renderDocument(page, (scale += cscale)));
-
   if ((isMobile() && scale > MOBILE_SCALE) || scale > BROWSER_SCALE) {
     document.getElementById("canvas_wrap").style["overflow"] = "auto";
   }
+
+  if (scale === 0) {
+    document.getElementById("too_small_message").style["display"] = "none";
+  }
+
+  pdf.getPage(1).then((page) => renderDocument(page, (scale += cscale)));
 }
 
 function zoomOut(cscale) {
@@ -34,7 +38,6 @@ function zoomOut(cscale) {
     scale = 0;
     return;
   } else {
-    document.getElementById("too_small_message").style["display"] = "none";
     pdf.getPage(1).then((page) => renderDocument(page, (scale -= cscale)));
   }
 }
