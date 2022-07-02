@@ -1,4 +1,5 @@
 const webpack = require("webpack"); // eslint-disable-line no-unused-vars
+const FaviconsWebpackPlugin = require("favicons-webpack-plugin");
 const path = require("path");
 
 module.exports = {
@@ -13,4 +14,13 @@ module.exports = {
     publicPath: "build",
     filename: "[name].js",
   },
+  module: {
+    rules: [
+      {
+        test: /\.css$/,
+        use: [{ loader: "style-loader" }, { loader: "css-loader" }],
+      },
+    ],
+  },
+  plugins: [new FaviconsWebpackPlugin("favicon.ico")],
 };

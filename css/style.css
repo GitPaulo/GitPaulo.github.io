@@ -1,3 +1,4 @@
+@import "~toastify-js/src/toastify.css";
 @import url("https://fonts.googleapis.com/css?family=Roboto");
 
 html {
@@ -18,6 +19,7 @@ body {
 }
 
 #button_area {
+  margin: 12px;
   justify-content: center;
   align-items: center;
   display: flex;
@@ -37,15 +39,10 @@ body {
   border: 1px solid black;
 }
 
-#button_area {
-  margin-bottom: 10px;
-}
-
 #controls {
-  position: absolute;
-  left: 50%;
-  top: 12.75%;
-  transform: translate(-50%, -50%);
+  position: relative;
+  top: 12px;
+  margin: auto;
 }
 
 /*

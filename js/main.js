@@ -1,4 +1,7 @@
 const Toastify = require("toastify-js");
+// css
+require("../css/style.css");
+// libs
 const isMobile = require("is-mobile");
 const pdfjsLib = require("pdfjs-dist");
 const loadingTask = pdfjsLib.getDocument("./resources/paulo_resume.pdf");
