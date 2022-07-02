@@ -27,6 +27,12 @@ body {
   text-align: center;
 }
 
+#too_small_message {
+  display: none;
+  color: red;
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+
 #resume_canvas {
   border: 1px solid black;
 }
