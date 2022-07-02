@@ -33,7 +33,8 @@ function renderDocument(page, scale) {
 }
 
 // media scale
-window.matchMedia("(max-width: 750px)").addEventListener("change", (media) => {
+// use deprecated because it doesnt fucking work on mobile?
+window.matchMedia("(max-width: 750px)").addListener((media) => {
   let pagePromise = pdf.getPage(1);
   if (media.matches) {
     pagePromise.then((page) => renderDocument(page, (scale = 0.7)));
