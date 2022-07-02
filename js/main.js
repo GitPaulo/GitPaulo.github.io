@@ -5,24 +5,38 @@ const loadingTask = pdfjsLib.getDocument("./resources/paulo_resume.pdf");
 let scale;
 let pdf;
 
+const MOBILE_SCALE = 0.7;
+const BROWSER_SCALE = 1.25;
+
 loadingTask.promise.then((_pdf) => {
   pdf = _pdf;
   pdf.getPage(1).then((page) => {
     if (isMobile()) {
-      renderDocument(page, (scale = 0.7));
+      renderDocument(page, (scale = MOBILE_SCALE));
       document.getElementById("btn_label").innerText = "📱 GitHub";
     } else {
-      renderDocument(page, (scale = 1.25));
+      renderDocument(page, (scale = BROWSER_SCALE));
     }
   });
 });
 
 function zoomIn(cscale) {
   pdf.getPage(1).then((page) => renderDocument(page, (scale += cscale)));
+
+  if ((isMobile() && scale > MOBILE_SCALE) || scale > BROWSER_SCALE) {
+    document.getElementById("canvas_wrap").style["overflow"] = "auto";
+  }
 }
 
 function zoomOut(cscale) {
-  pdf.getPage(1).then((page) => renderDocument(page, (scale -= cscale)));
+  if (scale <= 0) {
+    document.getElementById("too_small_message").style["display"] = "block";
+    scale = 0;
+    return;
+  } else {
+    document.getElementById("too_small_message").style["display"] = "none";
+    pdf.getPage(1).then((page) => renderDocument(page, (scale -= cscale)));
+  }
 }
 
 function renderDocument(page, scale) {
