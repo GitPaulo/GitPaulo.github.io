@@ -361,7 +361,7 @@ var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBP
 ___CSS_LOADER_EXPORT___.i(_node_modules_css_loader_dist_cjs_js_node_modules_toastify_js_src_toastify_css__WEBPACK_IMPORTED_MODULE_2__["default"]);
 ___CSS_LOADER_EXPORT___.push([module.id, "@import url(https://fonts.googleapis.com/css?family=Roboto);"]);
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "html {\n  height: 100%;\n  width: 100%;\n}\n\np {\n  margin: 0;\n}\n\nbody {\n  display: flex;\n  height: 100%;\n  flex-direction: column;\n  background: rgb(58, 57, 57);\n}\n\n#button_area {\n  margin: 12px;\n  justify-content: center;\n  align-items: center;\n  display: flex;\n}\n\n#canvas_wrap {\n  text-align: center;\n  cursor: grab;\n  overflow: auto;\n}\n\n#too_small_message {\n  display: none;\n  color: red;\n  font-family: \"Lucida Console\", \"Courier New\", monospace;\n}\n\n#resume_canvas {\n  border: 1px solid black;\n}\n\n#controls {\n  position: relative;\n  top: 12px;\n  display: flex;\n  justify-content: center;\n  gap: 4px;\n}\n\n/*\n BUTTON STYLING\n*/\n\n.zoom_btn:hover {\n  background-color: gainsboro;\n  cursor: pointer;\n}\n\n.btn {\n  position: relative;\n  color: rgb(255, 255, 255);\n  width: 256px;\n  height: 64px;\n  line-height: 64px;\n  transition: all 0.3s;\n  text-align: center;\n  font-family: \"Courier New\", Courier, monospace;\n  font-weight: 100;\n}\n\n.btn span {\n  transition: all 0.3s;\n  tranform: scale(1, 1);\n}\n\n.btn::before,\n.btn::after {\n  content: \"\";\n  position: absolute;\n  transition: all 0.3s;\n  bottom: 0;\n  left: 0;\n  width: 100%;\n  height: 100%;\n  z-index: 1;\n}\n\n.btn-one::before {\n  z-index: 1;\n  opacity: 0;\n  background: rgba(255, 255, 255, 0.1);\n  transform: scale(0.1, 1);\n}\n\n.btn-one:hover::before {\n  opacity: 1;\n  transform: scale(1, 1);\n}\n\n.btn-one::after {\n  transition: all 0.3s;\n  border: 1px solid rgba(255, 255, 255, 0.5);\n}\n\n.btn-one:hover {\n  cursor: pointer;\n}\n\n.btn-one:hover::after {\n  transform: scale(1, 0.1);\n  opacity: 0;\n}\n\n/*\n Media\n*/\n\n@media only screen and (max-width: 750px) {\n  .btn {\n    width: 140px;\n    height: 60px;\n  }\n}\n\n@media only screen and (max-width: 500px) {\n  #canvas_wrap {\n    overflow: auto;\n  }\n}", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "html {\n  height: 100%;\n  width: 100%;\n}\n\n* {\n  box-sizing: border-box;\n}\n\np {\n  margin: 0;\n}\n\nbody {\n  display: flex;\n  height: 100%;\n  flex-direction: column;\n  background: rgb(58, 57, 57);\n}\n\nh1 {\n  font-size: 1.6em;\n  line-height: 1.1;\n  font-family: \"Courier New\", Courier, monospace;\n}\n\n#button_area {\n  margin: 12px;\n  justify-content: center;\n  align-items: center;\n  display: flex;\n}\n\n#canvas_wrap {\n  text-align: center;\n  cursor: grab;\n  overflow: auto;\n}\n\n#too_small_message {\n  display: none;\n  color: red;\n  font-family: \"Roboto\", monospace;\n}\n\n#resume_canvas {\n  border: 1px solid black;\n}\n\n#controls {\n  position: relative;\n  top: 10px;\n  display: flex;\n  justify-content: center;\n  gap: 4px;\n}\n\n/*\n  Classes\n*/\n\n.attention {\n  border: 2px solid red;\n}\n\n.zoom_btn:hover {\n  background-color: gainsboro;\n  cursor: pointer;\n}\n\n/*\n  Dialog\n*/\n\n.dialog-container {\n  display: flex;\n  position: fixed;\n  top: 0;\n  left: 0;\n  bottom: 0;\n  right: 0;\n  z-index: 2;\n}\n\n.dialog-container[aria-hidden=\"true\"] {\n  display: none;\n}\n\n.dialog-overlay {\n  position: fixed;\n  top: 0;\n  left: 0;\n  bottom: 0;\n  right: 0;\n  background-color: rgba(43, 46, 56, 0.9);\n  animation: fade-in 200ms both;\n}\n\n.dialog-content {\n  background-color: rgb(255, 255, 255);\n  margin: auto;\n  z-index: 2;\n  position: relative;\n  animation: fade-in 400ms 200ms both, slide-up 400ms 200ms both;\n  padding: 1em;\n  max-width: 90%;\n  width: 600px;\n  border-radius: 2px;\n}\n\n@media screen and (min-width: 700px) {\n  .dialog-content {\n    padding: 2em;\n  }\n}\n\n@keyframes fade-in {\n  from {\n    opacity: 0;\n  }\n}\n\n@keyframes slide-up {\n  from {\n    transform: translateY(10%);\n  }\n}\n\n.dialog h1 {\n  margin: 0;\n  font-size: 1.25em;\n}\n\n#links_area {\n  display: flex;\n  flex-direction: column;\n  gap: 5px;\n  font-family: \"Roboto\", monospace;\n}\n\n/*\n  Github Button\n*/\n\n.btn {\n  position: relative;\n  color: rgb(255, 255, 255);\n  width: 256px;\n  height: 64px;\n  line-height: 64px;\n  transition: all 0.3s;\n  text-align: center;\n  font-family: \"Courier New\", Courier, monospace;\n  font-weight: 100;\n}\n\n.btn span {\n  transition: all 0.3s;\n  tranform: scale(1, 1);\n}\n\n.btn::before,\n.btn::after {\n  content: \"\";\n  position: absolute;\n  transition: all 0.3s;\n  bottom: 0;\n  left: 0;\n  width: 100%;\n  height: 100%;\n  z-index: 1;\n}\n\n.btn-one::before {\n  z-index: 1;\n  opacity: 0;\n  background: rgba(255, 255, 255, 0.1);\n  transform: scale(0.1, 1);\n}\n\n.btn-one:hover::before {\n  opacity: 1;\n  transform: scale(1, 1);\n}\n\n.btn-one::after {\n  transition: all 0.3s;\n  border: 1px solid rgba(255, 255, 255, 0.5);\n}\n\n.btn-one:hover {\n  cursor: pointer;\n}\n\n.btn-one:hover::after {\n  transform: scale(1, 0.1);\n  opacity: 0;\n}\n\n/*\n Media\n*/\n\n@media only screen and (max-width: 750px) {\n  .btn {\n    width: 140px;\n    height: 60px;\n  }\n}\n\n@media only screen and (max-width: 500px) {\n  #canvas_wrap {\n    overflow: auto;\n  }\n}\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -17457,6 +17457,408 @@ const pdfjsBuild = 'eaaa8b4ad';
 
 /* (ignored) */
 
+/***/ }),
+/* 21 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ A11yDialog)
+/* harmony export */ });
+var focusableSelectors = [
+  'a[href]:not([tabindex^="-"])',
+  'area[href]:not([tabindex^="-"])',
+  'input:not([type="hidden"]):not([type="radio"]):not([disabled]):not([tabindex^="-"])',
+  'input[type="radio"]:not([disabled]):not([tabindex^="-"])',
+  'select:not([disabled]):not([tabindex^="-"])',
+  'textarea:not([disabled]):not([tabindex^="-"])',
+  'button:not([disabled]):not([tabindex^="-"])',
+  'iframe:not([tabindex^="-"])',
+  'audio[controls]:not([tabindex^="-"])',
+  'video[controls]:not([tabindex^="-"])',
+  '[contenteditable]:not([tabindex^="-"])',
+  '[tabindex]:not([tabindex^="-"])',
+];
+
+var TAB_KEY = 'Tab';
+var ESCAPE_KEY = 'Escape';
+
+/**
+ * Define the constructor to instantiate a dialog
+ *
+ * @constructor
+ * @param {Element} element
+ */
+function A11yDialog(element) {
+  // Prebind the functions that will be bound in addEventListener and
+  // removeEventListener to avoid losing references
+  this._show = this.show.bind(this);
+  this._hide = this.hide.bind(this);
+  this._maintainFocus = this._maintainFocus.bind(this);
+  this._bindKeypress = this._bindKeypress.bind(this);
+
+  this.$el = element;
+  this.shown = false;
+  this._id = this.$el.getAttribute('data-a11y-dialog') || this.$el.id;
+  this._previouslyFocused = null;
+  this._listeners = {};
+
+  // Initialise everything needed for the dialog to work properly
+  this.create();
+}
+
+/**
+ * Set up everything necessary for the dialog to be functioning
+ *
+ * @param {(NodeList | Element | string)} targets
+ * @return {this}
+ */
+A11yDialog.prototype.create = function () {
+  this.$el.setAttribute('aria-hidden', true);
+  this.$el.setAttribute('aria-modal', true);
+  this.$el.setAttribute('tabindex', -1);
+
+  if (!this.$el.hasAttribute('role')) {
+    this.$el.setAttribute('role', 'dialog');
+  }
+
+  // Keep a collection of dialog openers, each of which will be bound a click
+  // event listener to open the dialog
+  this._openers = $$('[data-a11y-dialog-show="' + this._id + '"]');
+  this._openers.forEach(
+    function (opener) {
+      opener.addEventListener('click', this._show);
+    }.bind(this)
+  );
+
+  // Keep a collection of dialog closers, each of which will be bound a click
+  // event listener to close the dialog
+  this._closers = $$('[data-a11y-dialog-hide]', this.$el).concat(
+    $$('[data-a11y-dialog-hide="' + this._id + '"]')
+  );
+  this._closers.forEach(
+    function (closer) {
+      closer.addEventListener('click', this._hide);
+    }.bind(this)
+  );
+
+  // Execute all callbacks registered for the `create` event
+  this._fire('create');
+
+  return this
+};
+
+/**
+ * Show the dialog element, disable all the targets (siblings), trap the
+ * current focus within it, listen for some specific key presses and fire all
+ * registered callbacks for `show` event
+ *
+ * @param {CustomEvent} event
+ * @return {this}
+ */
+A11yDialog.prototype.show = function (event) {
+  // If the dialog is already open, abort
+  if (this.shown) {
+    return this
+  }
+
+  // Keep a reference to the currently focused element to be able to restore
+  // it later
+  this._previouslyFocused = document.activeElement;
+  this.$el.removeAttribute('aria-hidden');
+  this.shown = true;
+
+  // Set the focus to the dialog element
+  moveFocusToDialog(this.$el);
+
+  // Bind a focus event listener to the body element to make sure the focus
+  // stays trapped inside the dialog while open, and start listening for some
+  // specific key presses (TAB and ESC)
+  document.body.addEventListener('focus', this._maintainFocus, true);
+  document.addEventListener('keydown', this._bindKeypress);
+
+  // Execute all callbacks registered for the `show` event
+  this._fire('show', event);
+
+  return this
+};
+
+/**
+ * Hide the dialog element, enable all the targets (siblings), restore the
+ * focus to the previously active element, stop listening for some specific
+ * key presses and fire all registered callbacks for `hide` event
+ *
+ * @param {CustomEvent} event
+ * @return {this}
+ */
+A11yDialog.prototype.hide = function (event) {
+  // If the dialog is already closed, abort
+  if (!this.shown) {
+    return this
+  }
+
+  this.shown = false;
+  this.$el.setAttribute('aria-hidden', 'true');
+
+  // If there was a focused element before the dialog was opened (and it has a
+  // `focus` method), restore the focus back to it
+  // See: https://github.com/KittyGiraudel/a11y-dialog/issues/108
+  if (this._previouslyFocused && this._previouslyFocused.focus) {
+    this._previouslyFocused.focus();
+  }
+
+  // Remove the focus event listener to the body element and stop listening
+  // for specific key presses
+  document.body.removeEventListener('focus', this._maintainFocus, true);
+  document.removeEventListener('keydown', this._bindKeypress);
+
+  // Execute all callbacks registered for the `hide` event
+  this._fire('hide', event);
+
+  return this
+};
+
+/**
+ * Destroy the current instance (after making sure the dialog has been hidden)
+ * and remove all associated listeners from dialog openers and closers
+ *
+ * @return {this}
+ */
+A11yDialog.prototype.destroy = function () {
+  // Hide the dialog to avoid destroying an open instance
+  this.hide();
+
+  // Remove the click event listener from all dialog openers
+  this._openers.forEach(
+    function (opener) {
+      opener.removeEventListener('click', this._show);
+    }.bind(this)
+  );
+
+  // Remove the click event listener from all dialog closers
+  this._closers.forEach(
+    function (closer) {
+      closer.removeEventListener('click', this._hide);
+    }.bind(this)
+  );
+
+  // Execute all callbacks registered for the `destroy` event
+  this._fire('destroy');
+
+  // Keep an object of listener types mapped to callback functions
+  this._listeners = {};
+
+  return this
+};
+
+/**
+ * Register a new callback for the given event type
+ *
+ * @param {string} type
+ * @param {Function} handler
+ */
+A11yDialog.prototype.on = function (type, handler) {
+  if (typeof this._listeners[type] === 'undefined') {
+    this._listeners[type] = [];
+  }
+
+  this._listeners[type].push(handler);
+
+  return this
+};
+
+/**
+ * Unregister an existing callback for the given event type
+ *
+ * @param {string} type
+ * @param {Function} handler
+ */
+A11yDialog.prototype.off = function (type, handler) {
+  var index = (this._listeners[type] || []).indexOf(handler);
+
+  if (index > -1) {
+    this._listeners[type].splice(index, 1);
+  }
+
+  return this
+};
+
+/**
+ * Iterate over all registered handlers for given type and call them all with
+ * the dialog element as first argument, event as second argument (if any). Also
+ * dispatch a custom event on the DOM element itself to make it possible to
+ * react to the lifecycle of auto-instantiated dialogs.
+ *
+ * @access private
+ * @param {string} type
+ * @param {CustomEvent} event
+ */
+A11yDialog.prototype._fire = function (type, event) {
+  var listeners = this._listeners[type] || [];
+  var domEvent = new CustomEvent(type, { detail: event });
+
+  this.$el.dispatchEvent(domEvent);
+
+  listeners.forEach(
+    function (listener) {
+      listener(this.$el, event);
+    }.bind(this)
+  );
+};
+
+/**
+ * Private event handler used when listening to some specific key presses
+ * (namely ESCAPE and TAB)
+ *
+ * @access private
+ * @param {Event} event
+ */
+A11yDialog.prototype._bindKeypress = function (event) {
+  // This is an escape hatch in case there are nested dialogs, so the keypresses
+  // are only reacted to for the most recent one
+  if (!this.$el.contains(document.activeElement)) return
+
+  // If the dialog is shown and the ESCAPE key is being pressed, prevent any
+  // further effects from the ESCAPE key and hide the dialog, unless its role
+  // is 'alertdialog', which should be modal
+  if (
+    this.shown &&
+    event.key === ESCAPE_KEY &&
+    this.$el.getAttribute('role') !== 'alertdialog'
+  ) {
+    event.preventDefault();
+    this.hide(event);
+  }
+
+  // If the dialog is shown and the TAB key is being pressed, make sure the
+  // focus stays trapped within the dialog element
+  if (this.shown && event.key === TAB_KEY) {
+    trapTabKey(this.$el, event);
+  }
+};
+
+/**
+ * Private event handler used when making sure the focus stays within the
+ * currently open dialog
+ *
+ * @access private
+ * @param {Event} event
+ */
+A11yDialog.prototype._maintainFocus = function (event) {
+  // If the dialog is shown and the focus is not within a dialog element (either
+  // this one or another one in case of nested dialogs) or within an element
+  // with the `data-a11y-dialog-focus-trap-ignore` attribute, move it back to
+  // its first focusable child.
+  // See: https://github.com/KittyGiraudel/a11y-dialog/issues/177
+  if (
+    this.shown &&
+    !event.target.closest('[aria-modal="true"]') &&
+    !event.target.closest('[data-a11y-dialog-ignore-focus-trap]')
+  ) {
+    moveFocusToDialog(this.$el);
+  }
+};
+
+/**
+ * Convert a NodeList into an array
+ *
+ * @param {NodeList} collection
+ * @return {Array<Element>}
+ */
+function toArray(collection) {
+  return Array.prototype.slice.call(collection)
+}
+
+/**
+ * Query the DOM for nodes matching the given selector, scoped to context (or
+ * the whole document)
+ *
+ * @param {String} selector
+ * @param {Element} [context = document]
+ * @return {Array<Element>}
+ */
+function $$(selector, context) {
+  return toArray((context || document).querySelectorAll(selector))
+}
+
+/**
+ * Set the focus to the first element with `autofocus` with the element or the
+ * element itself
+ *
+ * @param {Element} node
+ */
+function moveFocusToDialog(node) {
+  var focused = node.querySelector('[autofocus]') || node;
+
+  focused.focus();
+}
+
+/**
+ * Get the focusable children of the given element
+ *
+ * @param {Element} node
+ * @return {Array<Element>}
+ */
+function getFocusableChildren(node) {
+  return $$(focusableSelectors.join(','), node).filter(function (child) {
+    return !!(
+      child.offsetWidth ||
+      child.offsetHeight ||
+      child.getClientRects().length
+    )
+  })
+}
+
+/**
+ * Trap the focus inside the given element
+ *
+ * @param {Element} node
+ * @param {Event} event
+ */
+function trapTabKey(node, event) {
+  var focusableChildren = getFocusableChildren(node);
+  var focusedItemIndex = focusableChildren.indexOf(document.activeElement);
+
+  // If the SHIFT key is being pressed while tabbing (moving backwards) and
+  // the currently focused item is the first one, move the focus to the last
+  // focusable item from the dialog element
+  if (event.shiftKey && focusedItemIndex === 0) {
+    focusableChildren[focusableChildren.length - 1].focus();
+    event.preventDefault();
+    // If the SHIFT key is not being pressed (moving forwards) and the currently
+    // focused item is the last one, move the focus to the first focusable item
+    // from the dialog element
+  } else if (
+    !event.shiftKey &&
+    focusedItemIndex === focusableChildren.length - 1
+  ) {
+    focusableChildren[0].focus();
+    event.preventDefault();
+  }
+}
+
+function instantiateDialogs() {
+  $$('[data-a11y-dialog]').forEach(function (node) {
+    new A11yDialog(node);
+  });
+}
+
+if (typeof document !== 'undefined') {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', instantiateDialogs);
+  } else {
+    if (window.requestAnimationFrame) {
+      window.requestAnimationFrame(instantiateDialogs);
+    } else {
+      window.setTimeout(instantiateDialogs, 16);
+    }
+  }
+}
+
+
+
+
 /***/ })
 /******/ 	]);
 /************************************************************************/
@@ -17532,8 +17934,11 @@ const pdfjsBuild = 'eaaa8b4ad';
 /******/ 	
 /************************************************************************/
 var __webpack_exports__ = {};
-// This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
+// This entry need to be wrapped in an IIFE because it need to be in strict mode.
 (() => {
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var a11y_dialog__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(21);
 // css
 __webpack_require__(1);
 
@@ -17543,44 +17948,52 @@ const isMobile = __webpack_require__(13);
 const pdfjsLib = __webpack_require__(14);
 const loadingTask = pdfjsLib.getDocument("./resources/paulo_resume.pdf");
 
-let scale;
-let pdf;
+// ?
+
 
 const MOBILE_SCALE = 0.7;
 const BROWSER_SCALE = 1.25;
+const TOO_SMALL_SCALE = 0.25;
+
+let scale;
+let pdf;
 
 loadingTask.promise.then((_pdf) => {
   pdf = _pdf;
   pdf.getPage(1).then((page) => {
+    toggleAttention(true);
     if (isMobile()) {
       renderDocument(page, (scale = MOBILE_SCALE));
       document.getElementById("btn_label").innerText = "📱 GitHub";
-      notify("👋 Hi 📱, please use zoom buttons!", () => {
-        document.getElementById("b1").style.border = "1px solid black";
-        document.getElementById("b2").style.border = "1px solid black";
-        document.getElementById("b3").style.border = "1px solid black";
-      });
+      notify("👋 Hi 📱, please use zoom buttons!", () =>
+        toggleAttention(false)
+      );
     } else {
       renderDocument(page, (scale = BROWSER_SCALE));
       document.getElementById("btn_label").innerText = "Return to GitHub";
-      document.getElementById("b1").style.border = "2px solid red";
-      document.getElementById("b2").style.border = "2px solid red";
-      document.getElementById("b3").style.border = "2px solid red";
-      notify("👋 Hey there, please use the zoom buttons!", () => {
-        document.getElementById("b1").style.border = "1px solid black";
-        document.getElementById("b2").style.border = "1px solid black";
-        document.getElementById("b3").style.border = "1px solid black";
-      });
+      notify("👋 Hey there, please use the zoom buttons!", () =>
+        toggleAttention(false)
+      );
     }
   });
 });
+
+function toggleAttention(shouldAttention) {
+  for (let element of document.getElementsByClassName("zoom_btn")) {
+    if (shouldAttention) {
+      element.classList.add("attention");
+    } else {
+      element.classList.remove("attention");
+    }
+  }
+}
 
 function zoomIn(cscale) {
   if ((isMobile() && scale > MOBILE_SCALE) || scale > BROWSER_SCALE) {
     document.getElementById("canvas_wrap").style["overflow"] = "auto";
   }
 
-  if (scale === 0) {
+  if (scale <= TOO_SMALL_SCALE) {
     document.getElementById("too_small_message").style["display"] = "none";
   }
 
@@ -17588,9 +18001,8 @@ function zoomIn(cscale) {
 }
 
 function zoomOut(cscale) {
-  if (scale <= 0) {
+  if (scale <= TOO_SMALL_SCALE) {
     document.getElementById("too_small_message").style["display"] = "block";
-    scale = 0;
     return;
   } else {
     pdf.getPage(1).then((page) => renderDocument(page, (scale -= cscale)));
@@ -17598,8 +18010,11 @@ function zoomOut(cscale) {
 }
 
 function center() {
-  document.getElementById('canvas_wrap').scrollLeft = (document.getElementById('resume_canvas').offsetWidth - document.getElementById('canvas_wrap').offsetWidth) / 2
-  document.getElementById('canvas_wrap').scrollTop = 0;
+  document.getElementById("canvas_wrap").scrollLeft =
+    (document.getElementById("resume_canvas").offsetWidth -
+      document.getElementById("canvas_wrap").offsetWidth) /
+    2;
+  document.getElementById("canvas_wrap").scrollTop = 0;
 }
 
 function renderDocument(page, scale) {
@@ -17626,14 +18041,45 @@ function notify(message, cb) {
   }).showToast();
 }
 
-// drago scroll
-document.addEventListener('DOMContentLoaded', function () {
-  const canvasWrap = document.getElementById('canvas_wrap');
+function openLinks() {
+  dialog.show();
+}
+
+function closeLinks() {
+  dialog.hide();
+}
+
+// links
+var dialog;
+document.addEventListener("DOMContentLoaded", function () {
+  // links dialog
+  const dialogEl = document.getElementById("links_dialog");
+  dialog = new a11y_dialog__WEBPACK_IMPORTED_MODULE_0__["default"](dialogEl);
+
+  dialog.on("show", function (dialogEl, triggerEl) {
+    pdf.getPage(1).then((page) => {
+      page.getAnnotations().then((annotations) => {
+        const linksAreaEl = document.getElementById("links_area");
+        linksAreaEl.innerHTML = ""; // destroy to avoid collecting
+        for (let annotation of annotations) {
+          const linkEl = document.createElement("a");
+          linkEl.innerText = `🔗 ${annotation.url}`;
+          linkEl.href = annotation.url;
+          linksAreaEl.appendChild(linkEl);
+        }
+      });
+    });
+  });
+});
+
+// drag scroll
+document.addEventListener("DOMContentLoaded", function () {
+  const canvasWrap = document.getElementById("canvas_wrap");
   let pos = { top: 0, left: 0, x: 0, y: 0 };
 
   const mouseDownHandler = function (e) {
-    canvasWrap.style.cursor = 'grabbing';
-    canvasWrap.style.userSelect = 'none';
+    canvasWrap.style.cursor = "grabbing";
+    canvasWrap.style.userSelect = "none";
 
     pos = {
       left: canvasWrap.scrollLeft,
@@ -17643,8 +18089,8 @@ document.addEventListener('DOMContentLoaded', function () {
       y: e.clientY,
     };
 
-    document.addEventListener('mousemove', mouseMoveHandler);
-    document.addEventListener('mouseup', mouseUpHandler);
+    document.addEventListener("mousemove", mouseMoveHandler);
+    document.addEventListener("mouseup", mouseUpHandler);
   };
 
   const mouseMoveHandler = function (e) {
@@ -17658,15 +18104,15 @@ document.addEventListener('DOMContentLoaded', function () {
   };
 
   const mouseUpHandler = function () {
-    canvasWrap.style.cursor = 'grab';
-    canvasWrap.style.removeProperty('user-select');
+    canvasWrap.style.cursor = "grab";
+    canvasWrap.style.removeProperty("user-select");
 
-    document.removeEventListener('mousemove', mouseMoveHandler);
-    document.removeEventListener('mouseup', mouseUpHandler);
+    document.removeEventListener("mousemove", mouseMoveHandler);
+    document.removeEventListener("mouseup", mouseUpHandler);
   };
 
   // Attach the handler
-  canvasWrap.addEventListener('mousedown', mouseDownHandler);
+  canvasWrap.addEventListener("mousedown", mouseDownHandler);
 });
 
 // media scale
@@ -17685,6 +18131,8 @@ window.matchMedia("(max-width: 750px)").addEventListener("change", (media) => {
 window.zoomIn = zoomIn;
 window.zoomOut = zoomOut;
 window.center = center;
+window.openLinks = openLinks;
+window.closeLinks = closeLinks;
 
 })();
 

@@ -6,6 +6,10 @@ html {
   width: 100%;
 }
 
+* {
+  box-sizing: border-box;
+}
+
 p {
   margin: 0;
 }
@@ -15,6 +19,12 @@ body {
   height: 100%;
   flex-direction: column;
   background: rgb(58, 57, 57);
+}
+
+h1 {
+  font-size: 1.6em;
+  line-height: 1.1;
+  font-family: "Courier New", Courier, monospace;
 }
 
 #button_area {
@@ -33,7 +43,7 @@ body {
 #too_small_message {
   display: none;
   color: red;
-  font-family: "Lucida Console", "Courier New", monospace;
+  font-family: "Roboto", monospace;
 }
 
 #resume_canvas {
@@ -42,20 +52,98 @@ body {
 
 #controls {
   position: relative;
-  top: 12px;
+  top: 10px;
   display: flex;
   justify-content: center;
   gap: 4px;
 }
 
 /*
- BUTTON STYLING
+  Classes
 */
+
+.attention {
+  border: 2px solid red;
+}
 
 .zoom_btn:hover {
   background-color: gainsboro;
   cursor: pointer;
 }
+
+/*
+  Dialog
+*/
+
+.dialog-container {
+  display: flex;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  z-index: 2;
+}
+
+.dialog-container[aria-hidden="true"] {
+  display: none;
+}
+
+.dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background-color: rgba(43, 46, 56, 0.9);
+  animation: fade-in 200ms both;
+}
+
+.dialog-content {
+  background-color: rgb(255, 255, 255);
+  margin: auto;
+  z-index: 2;
+  position: relative;
+  animation: fade-in 400ms 200ms both, slide-up 400ms 200ms both;
+  padding: 1em;
+  max-width: 90%;
+  width: 600px;
+  border-radius: 2px;
+}
+
+@media screen and (min-width: 700px) {
+  .dialog-content {
+    padding: 2em;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes slide-up {
+  from {
+    transform: translateY(10%);
+  }
+}
+
+.dialog h1 {
+  margin: 0;
+  font-size: 1.25em;
+}
+
+#links_area {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-family: "Roboto", monospace;
+}
+
+/*
+  Github Button
+*/
 
 .btn {
   position: relative;

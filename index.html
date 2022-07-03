@@ -1,32 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Paulo's Resume</title>
+    <!-- favicon is scuffed -->
+    <link
+      rel="shortcut icon"
+      href="build/assets/favicon.ico"
+      type="image/x-icon"
+    />
+    <script src="build/main.bundle.js"></script>
+  </head>
 
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Paulo's Resume</title>
-  <!-- favicon is scuffed -->
-  <link rel="shortcut icon" href="build/assets/favicon.ico" type="image/x-icon" />
-  <script src="build/main.bundle.js"></script>
-</head>
-
-<body>
-  <div id="button_area">
-    <div class="btn btn-one" onclick="window.location.href = 'https://github.com/GitPaulo';">
-      <span id="btn_label">Return To </span>
+  <body>
+    <div
+      id="links_dialog"
+      class="dialog-container"
+      aria-hidden="true"
+      aria-labelledby="Paulo's Resume Links"
+      aria-describedby="The links in Paulo's Resume"
+    >
+      <div class="dialog-overlay" data-a11y-dialog-hide></div>
+      <div class="dialog-content" role="document">
+        <div class="title_container"><h1>Links</h1></div>
+        <div id="links_area"></div>
+      </div>
     </div>
-  </div>
-  <div id="controls">
-    <button class="zoom_btn" id="b1" onclick="zoomIn(0.25)">🔍+</button>
-    <button class="zoom_btn" id="b2" onclick="center()">🎯</button>
-    <button class="zoom_btn" id="b3" onclick="zoomOut(0.25)">🔍-</button>
-  </div>
-  <div class="canvas_wrap" id="canvas_wrap">
-    <canvas id="resume_canvas"></canvas>
-    <div id="too_small_message">
-      <h1>⚠️ Too small!</h1>
+    <div id="button_area">
+      <div
+        class="btn btn-one"
+        onclick="window.location.href = 'https://github.com/GitPaulo';"
+      >
+        <span id="btn_label">Return To </span>
+      </div>
     </div>
-  </div>
-</body>
-
+    <div id="controls">
+      <button class="zoom_btn" id="b1" onclick="zoomIn(0.25)">🔍+</button>
+      <button class="zoom_btn" id="b2" onclick="center()">🎯</button>
+      <button class="zoom_btn" id="b3" onclick="openLinks()">🔗</button>
+      <button class="zoom_btn" id="b4" onclick="zoomOut(0.25)">🔍-</button>
+    </div>
+    <div class="canvas_wrap" id="canvas_wrap">
+      <canvas id="resume_canvas"></canvas>
+      <div id="too_small_message">
+        <h1>❌ Too small!</h1>
+      </div>
+    </div>
+  </body>
 </html>

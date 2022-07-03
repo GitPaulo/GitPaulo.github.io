@@ -1,7 +1,7 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 22:
+/***/ 23:
 /***/ (function(module) {
 
 /**
@@ -74481,7 +74481,7 @@ var __webpack_exports__ = {};
 (typeof window !== "undefined"
   ? window
   : {}
-).pdfjsWorker = __webpack_require__(22);
+).pdfjsWorker = __webpack_require__(23);
 
 })();
 
