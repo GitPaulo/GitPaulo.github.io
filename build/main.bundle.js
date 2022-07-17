@@ -18484,7 +18484,7 @@ function renderDocument(page, scale) {
   let canvas = document.getElementById("resume_canvas");
   let context = canvas.getContext("2d");
 
-  const resolution = 1.5;
+  const resolution = 1.4;
   canvas.height = resolution * viewport.height;
   canvas.width = resolution * viewport.width;
 
