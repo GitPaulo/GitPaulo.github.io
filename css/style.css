@@ -18,6 +18,7 @@ body {
   display: flex;
   height: 100%;
   flex-direction: column;
+  overflow: hidden;
   background: rgb(58, 57, 57);
 }
 
@@ -73,6 +74,8 @@ h1 {
 
 .toast {
   font-family: "Roboto", monospace !important;
+  background: #eb5454;
+  
 }
 
 /*
