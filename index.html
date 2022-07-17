@@ -7,10 +7,13 @@
   <title>Paulo's Resume</title>
   <!-- favicon is scuffed -->
   <link rel="shortcut icon" href="build/assets/favicon.ico" type="image/x-icon" />
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <script src="build/main.bundle.js"></script>
 </head>
 
 <body>
+  <div id="particles">
+  </div>
   <div id="links_dialog" class="dialog-container" aria-hidden="true" aria-labelledby="Paulo's Resume Links"
     aria-describedby="The links in Paulo's Resume">
     <div class="dialog-overlay" data-a11y-dialog-hide></div>
@@ -27,10 +30,10 @@
     </div>
   </div>
   <div id="controls">
-    <button class="zoom_btn" id="b1" onclick="zoomIn(0.25)">🔍+</button>
-    <button class="zoom_btn" id="b2" onclick="center()">🎯</button>
-    <button class="zoom_btn" id="b3" onclick="openLinks()">🔗</button>
-    <button class="zoom_btn" id="b4" onclick="zoomOut(0.25)">🔍-</button>
+    <button class="zoom_btn" id="b1" title="Zoom In" onclick="zoomIn(0.25)">🔍+</button>
+    <button class="zoom_btn" id="b2" title="Center" onclick="center()">🎯</button>
+    <button class="zoom_btn" id="b3" title="Links" onclick="openLinks()">🔗</button>
+    <button class="zoom_btn" id="b4" title="Zoom Out" onclick="zoomOut(0.25)">🔍-</button>
   </div>
   <div class="canvas_wrap" id="canvas_wrap">
     <canvas id="resume_canvas"></canvas>

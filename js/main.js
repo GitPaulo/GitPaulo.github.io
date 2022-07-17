@@ -1,3 +1,6 @@
+// particles
+require("./particles.js");
+
 // css
 require("../css/style.css");
 
@@ -10,8 +13,8 @@ const loadingTask = pdfjsLib.getDocument("./resources/paulo_resume.pdf");
 // ?
 import A11yDialog from "a11y-dialog";
 
-const MOBILE_SCALE = 0.7;
-const BROWSER_SCALE = 1.25;
+const MOBILE_SCALE = 1.25;
+const BROWSER_SCALE = 1;
 const TOO_SMALL_SCALE = 0.25;
 
 let scale;
@@ -56,16 +59,22 @@ function zoomIn(cscale) {
     document.getElementById("too_small_message").style["display"] = "none";
   }
 
-  pdf.getPage(1).then((page) => renderDocument(page, (scale += cscale)));
+  pdf.getPage(1).then((page) => {
+    renderDocument(page, (scale += cscale));
+    center();
+  });
 }
 
 function zoomOut(cscale) {
   if (scale <= TOO_SMALL_SCALE) {
     document.getElementById("too_small_message").style["display"] = "block";
     return;
-  } else {
-    pdf.getPage(1).then((page) => renderDocument(page, (scale -= cscale)));
   }
+
+  pdf.getPage(1).then((page) => {
+    renderDocument(page, (scale -= cscale));
+    center();
+  });
 }
 
 function center() {
@@ -80,12 +89,18 @@ function renderDocument(page, scale) {
   let viewport = page.getViewport({ scale: scale });
   let canvas = document.getElementById("resume_canvas");
   let context = canvas.getContext("2d");
-  canvas.height = viewport.height;
-  canvas.width = viewport.width;
+
+  const resolution = 1.75;
+  canvas.height = resolution * viewport.height;
+  canvas.width = resolution * viewport.width;
+
+  canvas.style.height = `${viewport.height}px`; //showing size will be smaller size
+  canvas.style.width = `${viewport.width}px`;
 
   page.render({
     canvasContext: context,
     viewport,
+    transform: [resolution, 0, 0, resolution, 0, 0],
   });
 }
 
@@ -123,7 +138,7 @@ document.addEventListener("DOMContentLoaded", function () {
         linksAreaEl.innerHTML = ""; // destroy to avoid collecting
         for (let annotation of annotations) {
           const linkEl = document.createElement("a");
-          linkEl.classList.add('underline');
+          linkEl.classList.add("underline");
           linkEl.innerText = `🔗 ${annotation.url}`;
           linkEl.href = annotation.url;
           linksAreaEl.appendChild(linkEl);

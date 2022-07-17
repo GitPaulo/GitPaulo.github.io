@@ -2,6 +2,459 @@
 /******/ 	var __webpack_modules__ = ([
 /* 0 */,
 /* 1 */
+/***/ (() => {
+
+/*!
+ * Particleground
+ *
+ */
+ document.addEventListener('DOMContentLoaded', function () {
+   particleground(document.getElementById('particles'), {
+     dotColor: '#D5D5D5',
+     lineColor: '#E8E8E8'
+   });
+}, false);
+
+;(function(window, document) {
+  "use strict";
+  var pluginName = 'particleground';
+
+  function extend(out) {
+    out = out || {};
+    for (var i = 1; i < arguments.length; i++) {
+      var obj = arguments[i];
+      if (!obj) continue;
+      for (var key in obj) {
+        if (obj.hasOwnProperty(key)) {
+          if (typeof obj[key] === 'object')
+            deepExtend(out[key], obj[key]);
+          else
+            out[key] = obj[key];
+        }
+      }
+    }
+    return out;
+  };
+
+  var $ = window.jQuery;
+
+  function Plugin(element, options) {
+    var canvasSupport = !!document.createElement('canvas').getContext;
+    var canvas;
+    var ctx;
+    var particles = [];
+    var raf;
+    var mouseX = 0;
+    var mouseY = 0;
+    var winW;
+    var winH;
+    var desktop = !navigator.userAgent.match(/(iPhone|iPod|iPad|Android|BlackBerry|BB10|mobi|tablet|opera mini|nexus 7)/i);
+    var orientationSupport = !!window.DeviceOrientationEvent;
+    var tiltX = 0;
+    var pointerX;
+    var pointerY;
+    var tiltY = 0;
+    var paused = false;
+
+    options = extend({}, window[pluginName].defaults, options);
+
+    /**
+     * Init
+     */
+    function init() {
+      if (!canvasSupport) { return; }
+
+      //Create canvas
+      canvas = document.createElement('canvas');
+      canvas.className = 'pg-canvas';
+      canvas.style.display = 'block';
+      element.insertBefore(canvas, element.firstChild);
+      ctx = canvas.getContext('2d');
+      styleCanvas();
+
+      // Create particles
+      var numParticles = Math.round((canvas.width * canvas.height) / options.density);
+      for (var i = 0; i < numParticles; i++) {
+        var p = new Particle();
+        p.setStackPos(i);
+        particles.push(p);
+      };
+
+      window.addEventListener('resize', function() {
+        resizeHandler();
+      }, false);
+
+      document.addEventListener('mousemove', function(e) {
+        mouseX = e.pageX;
+        mouseY = e.pageY;
+      }, false);
+
+      if (orientationSupport && !desktop) {
+        window.addEventListener('deviceorientation', function () {
+          // Contrain tilt range to [-30,30]
+          tiltY = Math.min(Math.max(-event.beta, -30), 30);
+          tiltX = Math.min(Math.max(-event.gamma, -30), 30);
+        }, true);
+      }
+
+      draw();
+      hook('onInit');
+    }
+
+    /**
+     * Style the canvas
+     */
+    function styleCanvas() {
+      canvas.width = element.offsetWidth;
+      canvas.height = element.offsetHeight;
+      ctx.fillStyle = options.dotColor;
+      ctx.strokeStyle = options.lineColor;
+      ctx.lineWidth = options.lineWidth;
+    }
+
+    /**
+     * Draw particles
+     */
+    function draw() {
+      if (!canvasSupport) { return; }
+
+      winW = window.innerWidth;
+      winH = window.innerHeight;
+
+      // Wipe canvas
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Update particle positions
+      for (var i = 0; i < particles.length; i++) {
+        particles[i].updatePosition();
+      };
+      // Draw particles
+      for (var i = 0; i < particles.length; i++) {
+        particles[i].draw();
+      };
+
+      // Call this function next time screen is redrawn
+      if (!paused) {
+        raf = requestAnimationFrame(draw);
+      }
+    }
+
+    /**
+     * Add/remove particles.
+     */
+    function resizeHandler() {
+      // Resize the canvas
+      styleCanvas();
+
+      var elWidth = element.offsetWidth;
+      var elHeight = element.offsetHeight;
+
+      // Remove particles that are outside the canvas
+      for (var i = particles.length - 1; i >= 0; i--) {
+        if (particles[i].position.x > elWidth || particles[i].position.y > elHeight) {
+          particles.splice(i, 1);
+        }
+      };
+
+      // Adjust particle density
+      var numParticles = Math.round((canvas.width * canvas.height) / options.density);
+      if (numParticles > particles.length) {
+        while (numParticles > particles.length) {
+          var p = new Particle();
+          particles.push(p);
+        }
+      } else if (numParticles < particles.length) {
+        particles.splice(numParticles);
+      }
+
+      // Re-index particles
+      for (i = particles.length - 1; i >= 0; i--) {
+        particles[i].setStackPos(i);
+      };
+    }
+
+    /**
+     * Pause particle system
+     */
+    function pause() {
+      paused = true;
+    }
+
+    /**
+     * Start particle system
+     */
+    function start() {
+      paused = false;
+      draw();
+    }
+
+    /**
+     * Particle
+     */
+    function Particle() {
+      this.stackPos;
+      this.active = true;
+      this.layer = Math.ceil(Math.random() * 3);
+      this.parallaxOffsetX = 0;
+      this.parallaxOffsetY = 0;
+      // Initial particle position
+      this.position = {
+        x: Math.ceil(Math.random() * canvas.width),
+        y: Math.ceil(Math.random() * canvas.height)
+      }
+      // Random particle speed, within min and max values
+      this.speed = {}
+      switch (options.directionX) {
+        case 'left':
+          this.speed.x = +(-options.maxSpeedX + (Math.random() * options.maxSpeedX) - options.minSpeedX).toFixed(2);
+          break;
+        case 'right':
+          this.speed.x = +((Math.random() * options.maxSpeedX) + options.minSpeedX).toFixed(2);
+          break;
+        default:
+          this.speed.x = +((-options.maxSpeedX / 2) + (Math.random() * options.maxSpeedX)).toFixed(2);
+          this.speed.x += this.speed.x > 0 ? options.minSpeedX : -options.minSpeedX;
+          break;
+      }
+      switch (options.directionY) {
+        case 'up':
+          this.speed.y = +(-options.maxSpeedY + (Math.random() * options.maxSpeedY) - options.minSpeedY).toFixed(2);
+          break;
+        case 'down':
+          this.speed.y = +((Math.random() * options.maxSpeedY) + options.minSpeedY).toFixed(2);
+          break;
+        default:
+          this.speed.y = +((-options.maxSpeedY / 2) + (Math.random() * options.maxSpeedY)).toFixed(2);
+          this.speed.x += this.speed.y > 0 ? options.minSpeedY : -options.minSpeedY;
+          break;
+      }
+    }
+
+    /**
+     * Draw particle
+     */
+    Particle.prototype.draw = function() {
+      // Draw circle
+      ctx.beginPath();
+      ctx.arc(this.position.x + this.parallaxOffsetX, this.position.y + this.parallaxOffsetY, options.particleRadius / 2, 0, Math.PI * 2, true);
+      ctx.closePath();
+      ctx.fill();
+
+      // Draw lines
+      ctx.beginPath();
+      // Iterate over all particles which are higher in the stack than this one
+      for (var i = particles.length - 1; i > this.stackPos; i--) {
+        var p2 = particles[i];
+
+        // Pythagorus theorum to get distance between two points
+        var a = this.position.x - p2.position.x
+        var b = this.position.y - p2.position.y
+        var dist = Math.sqrt((a * a) + (b * b)).toFixed(2);
+
+        // If the two particles are in proximity, join them
+        if (dist < options.proximity) {
+          ctx.moveTo(this.position.x + this.parallaxOffsetX, this.position.y + this.parallaxOffsetY);
+          if (options.curvedLines) {
+            ctx.quadraticCurveTo(Math.max(p2.position.x, p2.position.x), Math.min(p2.position.y, p2.position.y), p2.position.x + p2.parallaxOffsetX, p2.position.y + p2.parallaxOffsetY);
+          } else {
+            ctx.lineTo(p2.position.x + p2.parallaxOffsetX, p2.position.y + p2.parallaxOffsetY);
+          }
+        }
+      }
+      ctx.stroke();
+      ctx.closePath();
+    }
+
+    /**
+     * update particle position
+     */
+    Particle.prototype.updatePosition = function() {
+      if (options.parallax) {
+        if (orientationSupport && !desktop) {
+          // Map tiltX range [-30,30] to range [0,winW]
+          var ratioX = (winW - 0) / (30 - -30);
+          pointerX = (tiltX - -30) * ratioX + 0;
+          // Map tiltY range [-30,30] to range [0,winH]
+          var ratioY = (winH - 0) / (30 - -30);
+          pointerY = (tiltY - -30) * ratioY + 0;
+        } else {
+          pointerX = mouseX;
+          pointerY = mouseY;
+        }
+        // Calculate parallax offsets
+        this.parallaxTargX = (pointerX - (winW / 2)) / (options.parallaxMultiplier * this.layer);
+        this.parallaxOffsetX += (this.parallaxTargX - this.parallaxOffsetX) / 10; // Easing equation
+        this.parallaxTargY = (pointerY - (winH / 2)) / (options.parallaxMultiplier * this.layer);
+        this.parallaxOffsetY += (this.parallaxTargY - this.parallaxOffsetY) / 10; // Easing equation
+      }
+
+      var elWidth = element.offsetWidth;
+      var elHeight = element.offsetHeight;
+
+      switch (options.directionX) {
+        case 'left':
+          if (this.position.x + this.speed.x + this.parallaxOffsetX < 0) {
+            this.position.x = elWidth - this.parallaxOffsetX;
+          }
+          break;
+        case 'right':
+          if (this.position.x + this.speed.x + this.parallaxOffsetX > elWidth) {
+            this.position.x = 0 - this.parallaxOffsetX;
+          }
+          break;
+        default:
+          // If particle has reached edge of canvas, reverse its direction
+          if (this.position.x + this.speed.x + this.parallaxOffsetX > elWidth || this.position.x + this.speed.x + this.parallaxOffsetX < 0) {
+            this.speed.x = -this.speed.x;
+          }
+          break;
+      }
+
+      switch (options.directionY) {
+        case 'up':
+          if (this.position.y + this.speed.y + this.parallaxOffsetY < 0) {
+            this.position.y = elHeight - this.parallaxOffsetY;
+          }
+          break;
+        case 'down':
+          if (this.position.y + this.speed.y + this.parallaxOffsetY > elHeight) {
+            this.position.y = 0 - this.parallaxOffsetY;
+          }
+          break;
+        default:
+          // If particle has reached edge of canvas, reverse its direction
+          if (this.position.y + this.speed.y + this.parallaxOffsetY > elHeight || this.position.y + this.speed.y + this.parallaxOffsetY < 0) {
+            this.speed.y = -this.speed.y;
+          }
+          break;
+      }
+
+      // Move particle
+      this.position.x += this.speed.x;
+      this.position.y += this.speed.y;
+    }
+
+    /**
+     * Setter: particle stacking position
+     */
+    Particle.prototype.setStackPos = function(i) {
+      this.stackPos = i;
+    }
+
+    function option (key, val) {
+      if (val) {
+        options[key] = val;
+      } else {
+        return options[key];
+      }
+    }
+
+    function destroy() {
+      console.log('destroy');
+      canvas.parentNode.removeChild(canvas);
+      hook('onDestroy');
+      if ($) {
+        $(element).removeData('plugin_' + pluginName);
+      }
+    }
+
+    function hook(hookName) {
+      if (options[hookName] !== undefined) {
+        options[hookName].call(element);
+      }
+    }
+
+    init();
+
+    return {
+      option: option,
+      destroy: destroy,
+      start: start,
+      pause: pause
+    };
+  }
+
+  window[pluginName] = function(elem, options) {
+    return new Plugin(elem, options);
+  };
+
+  window[pluginName].defaults = {
+    minSpeedX: 0.1,
+    maxSpeedX: 0.7,
+    minSpeedY: 0.1,
+    maxSpeedY: 0.7,
+    directionX: 'center', // 'center', 'left' or 'right'. 'center' = dots bounce off edges
+    directionY: 'center', // 'center', 'up' or 'down'. 'center' = dots bounce off edges
+    density: 10000, // How many particles will be generated: one particle every n pixels
+    dotColor: '#666666',
+    lineColor: '#666666',
+    particleRadius: 7, // Dot size
+    lineWidth: 1,
+    curvedLines: false,
+    proximity: 100, // How close two dots need to be before they join
+    parallax: true,
+    parallaxMultiplier: 5, // The lower the number, the more extreme the parallax effect
+    onInit: function() {},
+    onDestroy: function() {}
+  };
+
+  // nothing wrong with hooking into jQuery if it's there...
+  if ($) {
+    $.fn[pluginName] = function(options) {
+      if (typeof arguments[0] === 'string') {
+        var methodName = arguments[0];
+        var args = Array.prototype.slice.call(arguments, 1);
+        var returnVal;
+        this.each(function() {
+          if ($.data(this, 'plugin_' + pluginName) && typeof $.data(this, 'plugin_' + pluginName)[methodName] === 'function') {
+            returnVal = $.data(this, 'plugin_' + pluginName)[methodName].apply(this, args);
+          }
+        });
+        if (returnVal !== undefined){
+          return returnVal;
+        } else {
+          return this;
+        }
+      } else if (typeof options === "object" || !options) {
+        return this.each(function() {
+          if (!$.data(this, 'plugin_' + pluginName)) {
+            $.data(this, 'plugin_' + pluginName, new Plugin(this, options));
+          }
+        });
+      }
+    };
+  }
+
+})(window, document);
+
+(function() {
+    var lastTime = 0;
+    var vendors = ['ms', 'moz', 'webkit', 'o'];
+    for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
+      window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
+      window.cancelAnimationFrame = window[vendors[x]+'CancelAnimationFrame']
+                                 || window[vendors[x]+'CancelRequestAnimationFrame'];
+    }
+
+    if (!window.requestAnimationFrame)
+      window.requestAnimationFrame = function(callback, element) {
+        var currTime = new Date().getTime();
+        var timeToCall = Math.max(0, 16 - (currTime - lastTime));
+        var id = window.setTimeout(function() { callback(currTime + timeToCall); },
+          timeToCall);
+        lastTime = currTime + timeToCall;
+        return id;
+      };
+
+    if (!window.cancelAnimationFrame)
+      window.cancelAnimationFrame = function(id) {
+        clearTimeout(id);
+      };
+}());
+
+
+/***/ }),
+/* 2 */
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -9,19 +462,19 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(3);
 /* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(3);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(4);
 /* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(4);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(5);
 /* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(5);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(6);
 /* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(6);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(7);
 /* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(7);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(8);
 /* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__);
-/* harmony import */ var _node_modules_css_loader_dist_cjs_js_style_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(8);
+/* harmony import */ var _node_modules_css_loader_dist_cjs_js_style_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(9);
 
       
       
@@ -52,7 +505,7 @@ var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js
 
 
 /***/ }),
-/* 2 */
+/* 3 */
 /***/ ((module) => {
 
 "use strict";
@@ -162,7 +615,7 @@ module.exports = function (list, options) {
 };
 
 /***/ }),
-/* 3 */
+/* 4 */
 /***/ ((module) => {
 
 "use strict";
@@ -238,7 +691,7 @@ function domAPI(options) {
 module.exports = domAPI;
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ ((module) => {
 
 "use strict";
@@ -283,7 +736,7 @@ function insertBySelector(insert, style) {
 module.exports = insertBySelector;
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
@@ -301,7 +754,7 @@ function setAttributesWithoutAttributes(styleElement) {
 module.exports = setAttributesWithoutAttributes;
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ ((module) => {
 
 "use strict";
@@ -318,7 +771,7 @@ function insertStyleElement(options) {
 module.exports = insertStyleElement;
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ ((module) => {
 
 "use strict";
@@ -340,7 +793,7 @@ function styleTagTransform(css, styleElement) {
 module.exports = styleTagTransform;
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ ((module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -348,11 +801,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(9);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(10);
 /* harmony import */ var _node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(10);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(11);
 /* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _node_modules_css_loader_dist_cjs_js_node_modules_toastify_js_src_toastify_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(11);
+/* harmony import */ var _node_modules_css_loader_dist_cjs_js_node_modules_toastify_js_src_toastify_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(12);
 // Imports
 
 
@@ -361,13 +814,13 @@ var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBP
 ___CSS_LOADER_EXPORT___.i(_node_modules_css_loader_dist_cjs_js_node_modules_toastify_js_src_toastify_css__WEBPACK_IMPORTED_MODULE_2__["default"]);
 ___CSS_LOADER_EXPORT___.push([module.id, "@import url(https://fonts.googleapis.com/css?family=Roboto);"]);
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "html {\n  height: 100%;\n  width: 100%;\n}\n\n* {\n  box-sizing: border-box;\n}\n\np {\n  margin: 0;\n}\n\nbody {\n  display: flex;\n  height: 100%;\n  flex-direction: column;\n  overflow: hidden;\n  background: rgb(58, 57, 57);\n}\n\nh1 {\n  font-size: 1.6em;\n  line-height: 1.1;\n  font-family: \"Roboto\", monospace;\n}\n\n#button_area {\n  margin: 12px;\n  justify-content: center;\n  align-items: center;\n  display: flex;\n}\n\n#canvas_wrap {\n  text-align: center;\n  cursor: grab;\n  overflow: auto;\n}\n\n#too_small_message {\n  display: none;\n  color: red;\n  font-family: \"Roboto\", monospace;\n}\n\n#resume_canvas {\n  border: 1px solid black;\n}\n\n#controls {\n  position: relative;\n  top: 10px;\n  display: flex;\n  justify-content: center;\n  gap: 4px;\n}\n\n/*\n  Classes\n*/\n\n.attention {\n  border: 2px solid red;\n}\n\n.zoom_btn:hover {\n  background-color: gainsboro;\n  cursor: pointer;\n}\n\n.toast {\n  font-family: \"Roboto\", monospace !important;\n  background: #eb5454;\n}\n\n/*\n  Links\n*/\n\na {\n  text-decoration: none;\n  color: #0074D9;\n}\n\n.underline {\n  position: relative;\n}\n\n.underline::before {\n  content: '';\n  position: absolute;\n  bottom: 0;\n  right: 0;\n  width: 0;\n  height: 2px;\n  background-color: #298be0;\n  transition: width 0.6s cubic-bezier(0.25, 1, 0.5, 1);\n}\n\n@media (hover: hover) and (pointer: fine) {\n  .underline:hover::before {\n    left: 0;\n    right: auto;\n    width: 100%;\n  }\n}\n\n/*\n  Dialog\n*/\n\n.dialog-container {\n  display: flex;\n  position: fixed;\n  top: 0;\n  left: 0;\n  bottom: 0;\n  right: 0;\n  z-index: 2;\n}\n\n.dialog-container[aria-hidden=\"true\"] {\n  display: none;\n}\n\n.dialog-overlay {\n  position: fixed;\n  top: 0;\n  left: 0;\n  bottom: 0;\n  right: 0;\n  background-color: rgba(43, 46, 56, 0.9);\n  animation: fade-in 200ms both;\n}\n\n.dialog-content {\n  background-color: rgb(255, 255, 255);\n  margin: auto;\n  z-index: 2;\n  position: relative;\n  animation: fade-in 400ms 200ms both, slide-up 400ms 200ms both;\n  padding: 1em;\n  max-width: 90%;\n  width: 600px;\n  border-radius: 2px;\n}\n\n@media screen and (min-width: 700px) {\n  .dialog-content {\n    padding: 2em;\n  }\n}\n\n@keyframes fade-in {\n  from {\n    opacity: 0;\n  }\n}\n\n@keyframes slide-up {\n  from {\n    transform: translateY(10%);\n  }\n}\n\n.dialog h1 {\n  margin: 0;\n  font-size: 1.25em;\n}\n\n#links_area {\n  align-items: flex-start;\n  align-content: flex-start;\n  display: flex;\n  flex-direction: column;\n  gap: 5px;\n  font-family: \"Roboto\", monospace;\n}\n\n/*\n  Github Button\n*/\n\n.btn {\n  position: relative;\n  color: rgb(255, 255, 255);\n  width: 256px;\n  height: 64px;\n  line-height: 64px;\n  transition: all 0.3s;\n  text-align: center;\n  font-family: \"Roboto\", monospace;\n  font-weight: 100;\n}\n\n.btn span {\n  transition: all 0.3s;\n  tranform: scale(1, 1);\n}\n\n.btn::before,\n.btn::after {\n  content: \"\";\n  position: absolute;\n  transition: all 0.3s;\n  bottom: 0;\n  left: 0;\n  width: 100%;\n  height: 100%;\n  z-index: 1;\n}\n\n.btn-one::before {\n  z-index: 1;\n  opacity: 0;\n  background: rgba(255, 255, 255, 0.1);\n  transform: scale(0.1, 1);\n}\n\n.btn-one:hover::before {\n  opacity: 1;\n  transform: scale(1, 1);\n}\n\n.btn-one::after {\n  transition: all 0.3s;\n  border: 1px solid rgba(255, 255, 255, 0.5);\n}\n\n.btn-one:hover {\n  cursor: pointer;\n}\n\n.btn-one:hover::after {\n  transform: scale(1, 0.1);\n  opacity: 0;\n}\n\n/*\n Media\n*/\n\n@media only screen and (max-width: 750px) {\n  .btn {\n    width: 140px;\n    height: 60px;\n  }\n}\n\n@media only screen and (max-width: 500px) {\n  #canvas_wrap {\n    overflow: auto;\n  }\n}", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "html {\n  height: 100%;\n  width: 100%;\n}\n\n* {\n  box-sizing: border-box;\n}\n\np {\n  margin: 0;\n}\n\nbody {\n  display: flex;\n  height: 100%;\n  flex-direction: column;\n  overflow: hidden;\n  background: rgb(58, 57, 57);\n}\n\nh1 {\n  font-size: 1.6em;\n  line-height: 1.1;\n  font-family: \"Roboto\", monospace;\n}\n\n#button_area {\n  margin: 12px;\n  justify-content: center;\n  align-items: center;\n  display: flex;\n}\n\n#canvas_wrap {\n  text-align: center;\n  cursor: grab;\n  overflow: auto;\n}\n\n#too_small_message {\n  display: none;\n  color: red;\n  font-family: \"Roboto\", monospace;\n}\n\n#resume_canvas {\n  border: 1px solid black;\n}\n\n#controls {\n  position: relative;\n  top: 10px;\n  display: flex;\n  justify-content: center;\n  gap: 4px;\n}\n\n/*\n  Classes\n*/\n\n.attention {\n  border: 2px solid red;\n}\n\n.zoom_btn:hover {\n  background-color: gainsboro;\n  cursor: pointer;\n}\n\n.toast {\n  font-family: \"Roboto\", monospace !important;\n  background: #eb5454;\n}\n\n/*\n  Links\n*/\n\na {\n  text-decoration: none;\n  color: #0074d9;\n}\n\n.underline {\n  position: relative;\n}\n\n.underline::before {\n  content: \"\";\n  position: absolute;\n  bottom: 0;\n  right: 0;\n  width: 0;\n  height: 2px;\n  background-color: #298be0;\n  transition: width 0.6s cubic-bezier(0.25, 1, 0.5, 1);\n}\n\n@media (hover: hover) and (pointer: fine) {\n  .underline:hover::before {\n    left: 0;\n    right: auto;\n    width: 100%;\n  }\n}\n\n/*\n  Dialog\n*/\n\n.dialog-container {\n  display: flex;\n  position: fixed;\n  top: 0;\n  left: 0;\n  bottom: 0;\n  right: 0;\n  z-index: 2;\n}\n\n.dialog-container[aria-hidden=\"true\"] {\n  display: none;\n}\n\n.dialog-overlay {\n  position: fixed;\n  top: 0;\n  left: 0;\n  bottom: 0;\n  right: 0;\n  background-color: rgba(43, 46, 56, 0.9);\n  animation: fade-in 200ms both;\n}\n\n.dialog-content {\n  background-color: rgb(255, 255, 255);\n  margin: auto;\n  z-index: 2;\n  position: relative;\n  animation: fade-in 400ms 200ms both, slide-up 400ms 200ms both;\n  padding: 1em;\n  max-width: 90%;\n  width: 600px;\n  border-radius: 2px;\n}\n\n@media screen and (min-width: 700px) {\n  .dialog-content {\n    padding: 2em;\n  }\n}\n\n@keyframes fade-in {\n  from {\n    opacity: 0;\n  }\n}\n\n@keyframes slide-up {\n  from {\n    transform: translateY(10%);\n  }\n}\n\n.dialog h1 {\n  margin: 0;\n  font-size: 1.25em;\n}\n\n#links_area {\n  align-items: flex-start;\n  align-content: flex-start;\n  display: flex;\n  flex-direction: column;\n  gap: 5px;\n  font-family: \"Roboto\", monospace;\n}\n\n/*\n  Github Button\n*/\n\n.btn {\n  position: relative;\n  color: rgb(255, 255, 255);\n  width: 256px;\n  height: 64px;\n  line-height: 64px;\n  transition: all 0.3s;\n  text-align: center;\n  font-family: \"Roboto\", monospace;\n  font-weight: 100;\n}\n\n.btn span {\n  transition: all 0.3s;\n  tranform: scale(1, 1);\n}\n\n.btn::before,\n.btn::after {\n  content: \"\";\n  position: absolute;\n  transition: all 0.3s;\n  bottom: 0;\n  left: 0;\n  width: 100%;\n  height: 100%;\n  z-index: 1;\n}\n\n.btn-one::before {\n  z-index: 1;\n  opacity: 0;\n  background: rgba(255, 255, 255, 0.1);\n  transform: scale(0.1, 1);\n}\n\n.btn-one:hover::before {\n  opacity: 1;\n  transform: scale(1, 1);\n}\n\n.btn-one::after {\n  transition: all 0.3s;\n  border: 1px solid rgba(255, 255, 255, 0.5);\n}\n\n.btn-one:hover {\n  cursor: pointer;\n}\n\n.btn-one:hover::after {\n  transform: scale(1, 0.1);\n  opacity: 0;\n}\n\n/*\n Media\n*/\n\n@media only screen and (max-width: 750px) {\n  .btn {\n    width: 140px;\n    height: 60px;\n  }\n}\n\n@media only screen and (max-width: 500px) {\n  #canvas_wrap {\n    overflow: auto;\n  }\n}\n\n/*\n* Particles\n*/\n\n#particles {\n  position: absolute;\n  margin: 0;\n  padding: 0;\n  height: 100%;\n  width: 100%;\n  z-index: -1;\n}\n\n.pg-canvas {\n  position: absolute;\n  left: 0;\n  top: 0;\n  z-index: -1;\n}\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ ((module) => {
 
 "use strict";
@@ -378,7 +831,7 @@ module.exports = function (i) {
 };
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ ((module) => {
 
 "use strict";
@@ -486,7 +939,7 @@ module.exports = function (cssWithMappingToString) {
 };
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ ((module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -494,9 +947,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(9);
+/* harmony import */ var _css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(10);
 /* harmony import */ var _css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(10);
+/* harmony import */ var _css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(11);
 /* harmony import */ var _css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
 // Imports
 
@@ -509,7 +962,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, "/*!\n * Toastify js 1.11.2\n * https:/
 
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module) {
 
 /*!
@@ -952,7 +1405,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, "/*!\n * Toastify js 1.11.2\n * https:/
 
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ ((module) => {
 
 "use strict";
@@ -997,7 +1450,7 @@ function isMobile (opts) {
 
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 /**
@@ -10567,7 +11020,7 @@ var _base_factory = __w_pdfjs_require__(6);
 
 const fetchData = function (url) {
   return new Promise((resolve, reject) => {
-    const fs = __webpack_require__(15);
+    const fs = __webpack_require__(16);
 
     fs.readFile(url, (error, data) => {
       if (error || !data) {
@@ -10582,7 +11035,7 @@ const fetchData = function (url) {
 
 class NodeCanvasFactory extends _base_factory.BaseCanvasFactory {
   _createCanvas(width, height) {
-    const Canvas = __webpack_require__(16);
+    const Canvas = __webpack_require__(17);
 
     return Canvas.createCanvas(width, height);
   }
@@ -14149,7 +14602,7 @@ exports.SVGGraphics = SVGGraphics;
           input = Buffer.from(literals);
         }
 
-        const output = (__webpack_require__(17).deflateSync)(input, {
+        const output = (__webpack_require__(18).deflateSync)(input, {
           level: 9
         });
 
@@ -15583,13 +16036,13 @@ var _network_utils = __w_pdfjs_require__(26);
 
 ;
 
-const fs = __webpack_require__(15);
+const fs = __webpack_require__(16);
 
-const http = __webpack_require__(18);
+const http = __webpack_require__(19);
 
-const https = __webpack_require__(19);
+const https = __webpack_require__(20);
 
-const url = __webpack_require__(20);
+const url = __webpack_require__(21);
 
 const fileUriRegex = /^file:\/\/\/[a-zA-Z]:\//;
 
@@ -17422,12 +17875,6 @@ const pdfjsBuild = 'eaaa8b4ad';
 //# sourceMappingURL=pdf.js.map
 
 /***/ }),
-/* 15 */
-/***/ (() => {
-
-/* (ignored) */
-
-/***/ }),
 /* 16 */
 /***/ (() => {
 
@@ -17459,6 +17906,12 @@ const pdfjsBuild = 'eaaa8b4ad';
 
 /***/ }),
 /* 21 */
+/***/ (() => {
+
+/* (ignored) */
+
+/***/ }),
+/* 22 */
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -17938,21 +18391,24 @@ var __webpack_exports__ = {};
 (() => {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var a11y_dialog__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(21);
-// css
+/* harmony import */ var a11y_dialog__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(22);
+// particles
 __webpack_require__(1);
 
+// css
+__webpack_require__(2);
+
 // libs
-const Toastify = __webpack_require__(12);
-const isMobile = __webpack_require__(13);
-const pdfjsLib = __webpack_require__(14);
+const Toastify = __webpack_require__(13);
+const isMobile = __webpack_require__(14);
+const pdfjsLib = __webpack_require__(15);
 const loadingTask = pdfjsLib.getDocument("./resources/paulo_resume.pdf");
 
 // ?
 
 
-const MOBILE_SCALE = 0.7;
-const BROWSER_SCALE = 1.25;
+const MOBILE_SCALE = 1.25;
+const BROWSER_SCALE = 1;
 const TOO_SMALL_SCALE = 0.25;
 
 let scale;
@@ -17997,16 +18453,22 @@ function zoomIn(cscale) {
     document.getElementById("too_small_message").style["display"] = "none";
   }
 
-  pdf.getPage(1).then((page) => renderDocument(page, (scale += cscale)));
+  pdf.getPage(1).then((page) => {
+    renderDocument(page, (scale += cscale));
+    center();
+  });
 }
 
 function zoomOut(cscale) {
   if (scale <= TOO_SMALL_SCALE) {
     document.getElementById("too_small_message").style["display"] = "block";
     return;
-  } else {
-    pdf.getPage(1).then((page) => renderDocument(page, (scale -= cscale)));
   }
+
+  pdf.getPage(1).then((page) => {
+    renderDocument(page, (scale -= cscale));
+    center();
+  });
 }
 
 function center() {
@@ -18021,12 +18483,18 @@ function renderDocument(page, scale) {
   let viewport = page.getViewport({ scale: scale });
   let canvas = document.getElementById("resume_canvas");
   let context = canvas.getContext("2d");
-  canvas.height = viewport.height;
-  canvas.width = viewport.width;
+
+  const resolution = 1.75;
+  canvas.height = resolution * viewport.height;
+  canvas.width = resolution * viewport.width;
+
+  canvas.style.height = `${viewport.height}px`; //showing size will be smaller size
+  canvas.style.width = `${viewport.width}px`;
 
   page.render({
     canvasContext: context,
     viewport,
+    transform: [resolution, 0, 0, resolution, 0, 0],
   });
 }
 
@@ -18064,7 +18532,7 @@ document.addEventListener("DOMContentLoaded", function () {
         linksAreaEl.innerHTML = ""; // destroy to avoid collecting
         for (let annotation of annotations) {
           const linkEl = document.createElement("a");
-          linkEl.classList.add('underline');
+          linkEl.classList.add("underline");
           linkEl.innerText = `🔗 ${annotation.url}`;
           linkEl.href = annotation.url;
           linksAreaEl.appendChild(linkEl);
