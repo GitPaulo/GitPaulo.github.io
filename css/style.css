@@ -59,6 +59,10 @@ h1 {
   gap: 4px;
 }
 
+#controls > button {
+  font-size: medium;
+}
+
 /*
   Classes
 */
