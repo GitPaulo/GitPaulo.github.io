@@ -1,6 +1,3 @@
-// particles
-require("./particles.js");
-
 // css
 require("../css/style.css");
 
@@ -125,7 +122,7 @@ function closeLinks() {
 }
 
 function download() {
-  window.open('resources/paulo_resume.pdf', '_self');
+  window.open("resources/paulo_resume.pdf", "_self");
 }
 
 // links
