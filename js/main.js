@@ -97,7 +97,7 @@ function center() {
         0,
         (document.getElementById("resume_canvas").offsetWidth -
           canvasWrap.offsetWidth) /
-          2
+        2
       );
     }, 50);
   });
