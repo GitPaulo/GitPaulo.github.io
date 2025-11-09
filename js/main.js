@@ -7,6 +7,9 @@ import isMobile from "is-mobile";
 import * as pdfjsLib from "pdfjs-dist";
 import A11yDialog from "a11y-dialog";
 
+// Show body once CSS is loaded (prevent FOUC)
+document.body.classList.add("loaded");
+
 // Configure PDF.js worker
 pdfjsLib.GlobalWorkerOptions.workerSrc = "build/main.bundle.worker.js";
 
@@ -20,23 +23,58 @@ let scale;
 let pdf;
 let currentRenderTask = null;
 
-loadingTask.promise.then((_pdf) => {
-  pdf = _pdf;
-  pdf.getPage(1).then((page) => {
-    toggleAttention(true);
+// Show UI elements after PDF is loaded
+function showUI() {
+  const pdfContainer = document.getElementById("pdf-container");
+  const loadingSpinner = document.getElementById("loading-spinner");
+  const buttonArea = document.getElementById("button-area");
+  const controls = document.getElementById("controls");
+
+  // Hide spinner
+  loadingSpinner.classList.add("hidden");
+  setTimeout(() => {
+    loadingSpinner.style.display = "none";
+  }, 300);
+
+  // Show PDF and controls
+  pdfContainer.classList.add("loaded");
+  buttonArea.classList.add("visible");
+  controls.classList.add("visible");
+}
+
+loadingTask.promise
+  .then((_pdf) => {
+    pdf = _pdf;
+    return pdf.getPage(1);
+  })
+  .then((page) => {
     if (isMobile()) {
       renderDocument(page, (scale = MOBILE_SCALE));
-      notify("👋 Hi 📱, please use zoom buttons!", () =>
-        toggleAttention(false)
-      );
     } else {
       renderDocument(page, (scale = BROWSER_SCALE));
-      notify("👋 Hey there, please use the zoom buttons!", () =>
-        toggleAttention(false)
-      );
     }
+
+    // Show UI after render completes
+    setTimeout(() => {
+      showUI();
+      toggleAttention(true);
+      if (isMobile()) {
+        notify("👋 Hi 📱, please use zoom buttons!", () =>
+          toggleAttention(false)
+        );
+      } else {
+        notify("👋 Hey there, please use the zoom buttons!", () =>
+          toggleAttention(false)
+        );
+      }
+    }, 100);
+  })
+  .catch((error) => {
+    console.error("Error loading PDF:", error);
+    const loadingSpinner = document.getElementById("loading-spinner");
+    loadingSpinner.innerHTML =
+      '<p style="color: var(--color-accent);">Failed to load resume. Please refresh the page.</p>';
   });
-});
 
 function toggleAttention(shouldAttention) {
   for (let element of document.getElementsByClassName("zoom-btn")) {
@@ -99,7 +137,7 @@ function center() {
         0,
         (document.getElementById("resume-canvas").offsetWidth -
           canvasWrap.offsetWidth) /
-        2
+          2
       );
     }, 50);
   });
@@ -348,7 +386,7 @@ document.addEventListener("keydown", function (e) {
     e.target.tagName === "INPUT" ||
     e.target.tagName === "TEXTAREA" ||
     document.getElementById("links-dialog").getAttribute("aria-hidden") ===
-    "false"
+      "false"
   ) {
     return;
   }

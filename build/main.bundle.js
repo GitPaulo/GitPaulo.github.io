@@ -609,6 +609,8 @@ body {
 body {
   display: flex;
   flex-direction: column;
+  /* Prevent layout shift during font loading */
+  font-display: swap;
   overflow: hidden;
   background: var(--color-bg);
   font-family: var(--font-base);
@@ -652,6 +654,14 @@ h1 {
   inset-block-start: 20px;
   inset-inline-end: 20px;
   z-index: 1000;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  pointer-events: none;
+}
+
+#button-area.visible {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 #controls {
@@ -662,6 +672,14 @@ h1 {
   display: flex;
   gap: 8px;
   z-index: 1000;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  pointer-events: none;
+}
+
+#controls.visible {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 #canvas-wrap {
@@ -681,6 +699,46 @@ h1 {
 #pdf-container {
   position: relative;
   display: inline-block;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+
+#pdf-container.loaded {
+  opacity: 1;
+}
+
+#loading-spinner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  font-family: var(--font-base);
+  color: var(--color-primary);
+  opacity: 1;
+  transition: opacity 0.3s ease-in-out;
+}
+
+#loading-spinner.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid rgba(0, 116, 217, 0.2);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 #too-small-message {
@@ -28518,6 +28576,9 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+// Show body once CSS is loaded (prevent FOUC)
+document.body.classList.add("loaded");
+
 // Configure PDF.js worker
 pdfjs_dist__WEBPACK_IMPORTED_MODULE_3__.GlobalWorkerOptions.workerSrc = "build/main.bundle.worker.js";
 
@@ -28531,23 +28592,58 @@ let scale;
 let pdf;
 let currentRenderTask = null;
 
-loadingTask.promise.then((_pdf) => {
-  pdf = _pdf;
-  pdf.getPage(1).then((page) => {
-    toggleAttention(true);
+// Show UI elements after PDF is loaded
+function showUI() {
+  const pdfContainer = document.getElementById("pdf-container");
+  const loadingSpinner = document.getElementById("loading-spinner");
+  const buttonArea = document.getElementById("button-area");
+  const controls = document.getElementById("controls");
+
+  // Hide spinner
+  loadingSpinner.classList.add("hidden");
+  setTimeout(() => {
+    loadingSpinner.style.display = "none";
+  }, 300);
+
+  // Show PDF and controls
+  pdfContainer.classList.add("loaded");
+  buttonArea.classList.add("visible");
+  controls.classList.add("visible");
+}
+
+loadingTask.promise
+  .then((_pdf) => {
+    pdf = _pdf;
+    return pdf.getPage(1);
+  })
+  .then((page) => {
     if (is_mobile__WEBPACK_IMPORTED_MODULE_2__()) {
       renderDocument(page, (scale = MOBILE_SCALE));
-      notify("👋 Hi 📱, please use zoom buttons!", () =>
-        toggleAttention(false)
-      );
     } else {
       renderDocument(page, (scale = BROWSER_SCALE));
-      notify("👋 Hey there, please use the zoom buttons!", () =>
-        toggleAttention(false)
-      );
     }
+
+    // Show UI after render completes
+    setTimeout(() => {
+      showUI();
+      toggleAttention(true);
+      if (is_mobile__WEBPACK_IMPORTED_MODULE_2__()) {
+        notify("👋 Hi 📱, please use zoom buttons!", () =>
+          toggleAttention(false)
+        );
+      } else {
+        notify("👋 Hey there, please use the zoom buttons!", () =>
+          toggleAttention(false)
+        );
+      }
+    }, 100);
+  })
+  .catch((error) => {
+    console.error("Error loading PDF:", error);
+    const loadingSpinner = document.getElementById("loading-spinner");
+    loadingSpinner.innerHTML =
+      '<p style="color: var(--color-accent);">Failed to load resume. Please refresh the page.</p>';
   });
-});
 
 function toggleAttention(shouldAttention) {
   for (let element of document.getElementsByClassName("zoom-btn")) {
