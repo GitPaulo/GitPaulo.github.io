@@ -1,146 +1,90 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Paulo's Resume</title>
-    <link
-      rel="shortcut icon"
-      href="build/assets/favicon.ico"
-      type="image/x-icon"
-    />
-    <meta name="theme-color" content="#0074d9" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <style>
-      /* Critical CSS to prevent FOUC */
-      body {
-        opacity: 0;
-        transition: opacity 0.3s ease-in-out;
-      }
-      body.loaded {
-        opacity: 1;
-      }
-    </style>
-  </head>
 
-  <body>
-    <a href="#canvas-wrap" class="skip-link">Skip to resume</a>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Paulo's Resume</title>
+  <link rel="shortcut icon" href="build/assets/favicon.ico" type="image/x-icon" />
+  <meta name="theme-color" content="#0074d9" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <style>
+    /* Critical CSS to prevent FOUC */
+    body {
+      opacity: 0;
+      transition: opacity 0.3s ease-in-out;
+    }
 
-    <div
-      id="links-dialog"
-      class="dialog-container"
-      aria-hidden="true"
-      aria-labelledby="links-dialog-title"
-      aria-describedby="links-dialog-desc"
-    >
-      <div class="dialog-overlay" data-a11y-dialog-hide></div>
-      <div class="dialog-content" role="document">
-        <h1 id="links-dialog-title">Links</h1>
-        <p id="links-dialog-desc" class="dialog-description">
-          Links are extracted from document.
-        </p>
-        <div id="links-area"></div>
-      </div>
+    body.loaded {
+      opacity: 1;
+    }
+  </style>
+</head>
+
+<body>
+  <a href="#canvas-wrap" class="skip-link">Skip to resume</a>
+
+  <div id="links-dialog" class="dialog-container" aria-hidden="true" aria-labelledby="links-dialog-title"
+    aria-describedby="links-dialog-desc">
+    <div class="dialog-overlay" data-a11y-dialog-hide></div>
+    <div class="dialog-content" role="document">
+      <h1 id="links-dialog-title">Links</h1>
+      <p id="links-dialog-desc" class="dialog-description">
+        Links are extracted from document.
+      </p>
+      <div id="links-area"></div>
     </div>
+  </div>
 
-    <div id="button-area">
-      <button
-        class="github-icon"
-        type="button"
-        onclick="window.location.href = 'https://github.com/GitPaulo';"
-        title="View on GitHub"
-        aria-label="View on GitHub"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="currentColor"
-          aria-hidden="true"
-          focusable="false"
-        >
-          <path
-            d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"
-          />
-        </svg>
-      </button>
+  <div id="button-area">
+    <button class="github-icon" type="button" onclick="window.location.href = 'https://github.com/GitPaulo';"
+      title="View on GitHub" aria-label="View on GitHub">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"
+        focusable="false">
+        <path
+          d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+      </svg>
+    </button>
+  </div>
+
+  <div id="controls" role="toolbar" aria-label="PDF viewer controls">
+    <button class="zoom-btn" id="b1" type="button" title="Zoom In" aria-label="Zoom In" onclick="zoomIn(0.25)">
+      <span class="btn-icon" aria-hidden="true">+</span><span class="btn-text">Zoom In</span>
+    </button>
+    <button class="zoom-btn" id="b2" type="button" title="Download" aria-label="Download PDF" onclick="download()">
+      <span class="btn-icon" aria-hidden="true">↓</span><span class="btn-text">Download</span>
+    </button>
+    <button class="zoom-btn" id="b3" type="button" title="Center" aria-label="Center and fit document"
+      onclick="center()">
+      <span class="btn-icon" aria-hidden="true">◉</span><span class="btn-text">Center</span>
+    </button>
+    <button class="zoom-btn" id="b4" type="button" title="Links" aria-label="Show document links" onclick="openLinks()">
+      <span class="btn-icon" aria-hidden="true">⚯</span><span class="btn-text">Links</span>
+    </button>
+    <button class="zoom-btn" id="b5" type="button" title="Zoom Out" aria-label="Zoom Out" onclick="zoomOut(0.25)">
+      <span class="btn-icon" aria-hidden="true">−</span><span class="btn-text">Zoom Out</span>
+    </button>
+  </div>
+
+  <div id="canvas-wrap" role="document" aria-label="Resume PDF viewer">
+    <div id="loading-spinner" aria-live="polite" aria-label="Loading resume">
+      <div class="spinner"></div>
+      <p>Loading resume...</p>
     </div>
-
-    <div id="controls" role="toolbar" aria-label="PDF viewer controls">
-      <button
-        class="zoom-btn"
-        id="b1"
-        type="button"
-        title="Zoom In"
-        aria-label="Zoom In"
-        onclick="zoomIn(0.25)"
-      >
-        <span class="btn-icon" aria-hidden="true">+</span
-        ><span class="btn-text">Zoom In</span>
-      </button>
-      <button
-        class="zoom-btn"
-        id="b2"
-        type="button"
-        title="Download"
-        aria-label="Download PDF"
-        onclick="download()"
-      >
-        <span class="btn-icon" aria-hidden="true">↓</span
-        ><span class="btn-text">Download</span>
-      </button>
-      <button
-        class="zoom-btn"
-        id="b3"
-        type="button"
-        title="Center"
-        aria-label="Center and fit document"
-        onclick="center()"
-      >
-        <span class="btn-icon" aria-hidden="true">◉</span
-        ><span class="btn-text">Center</span>
-      </button>
-      <button
-        class="zoom-btn"
-        id="b4"
-        type="button"
-        title="Links"
-        aria-label="Show document links"
-        onclick="openLinks()"
-      >
-        <span class="btn-icon" aria-hidden="true">⚯</span
-        ><span class="btn-text">Links</span>
-      </button>
-      <button
-        class="zoom-btn"
-        id="b5"
-        type="button"
-        title="Zoom Out"
-        aria-label="Zoom Out"
-        onclick="zoomOut(0.25)"
-      >
-        <span class="btn-icon" aria-hidden="true">−</span
-        ><span class="btn-text">Zoom Out</span>
-      </button>
+    <div id="pdf-container">
+      <canvas id="resume-canvas" aria-label="Paulo's Resume"></canvas>
     </div>
-
-    <div id="canvas-wrap" role="document" aria-label="Resume PDF viewer">
-      <div id="loading-spinner" aria-live="polite" aria-label="Loading resume">
-        <div class="spinner"></div>
-        <p>Loading resume...</p>
-      </div>
-      <div id="pdf-container">
-        <canvas id="resume-canvas" aria-label="Paulo's Resume"></canvas>
-      </div>
-      <div id="too-small-message" role="alert" aria-live="polite">
-        <h1>Canvas is too small!</h1>
-      </div>
+    <div id="too-small-message" role="alert" aria-live="polite">
+      <h1>Canvas is too small!</h1>
     </div>
+  </div>
 
-    <noscript>
-      Please enable JavaScript to view the PDF and controls.
-    </noscript>
+  <noscript>
+    Please enable JavaScript to view the PDF and controls.
+  </noscript>
 
-    <script src="build/main.bundle.js" defer></script>
-  </body>
+  <script src="build/main.bundle.js" defer></script>
+</body>
+
 </html>
