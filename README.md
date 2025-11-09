@@ -1,7 +1,12 @@
-## My Resume.
+## My Resume
 
-View it [here](https://gitpaulo.github.io/).
+View on https://gitpaulo.github.io/
 
-## TODO:
+## Dev
 
-- links are not working, have to fetch annotations (`page.getAnnotations()`) and render them on screen with a clickable element in the right place somehow seems like a lot of effort.
+This is a webpack built jekyll github pages site.
+
+```sh
+npm run build
+npm run dev
+```
