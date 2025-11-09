@@ -57,9 +57,10 @@ function zoomIn(cscale) {
     document.getElementById("too_small_message").style["display"] = "none";
   }
 
+  scale += cscale;
+
   pdf.getPage(1).then((page) => {
-    renderDocument(page, (scale += cscale));
-    center();
+    renderDocument(page, scale);
   });
 }
 
@@ -69,9 +70,10 @@ function zoomOut(cscale) {
     return;
   }
 
+  scale -= cscale;
+
   pdf.getPage(1).then((page) => {
-    renderDocument(page, (scale -= cscale));
-    center();
+    renderDocument(page, scale);
   });
 }
 
@@ -97,7 +99,7 @@ function center() {
         0,
         (document.getElementById("resume_canvas").offsetWidth -
           canvasWrap.offsetWidth) /
-          2
+        2
       );
     }, 50);
   });
@@ -310,7 +312,7 @@ document.addEventListener("keydown", function (e) {
     e.target.tagName === "INPUT" ||
     e.target.tagName === "TEXTAREA" ||
     document.getElementById("links_dialog").getAttribute("aria-hidden") ===
-      "false"
+    "false"
   ) {
     return;
   }

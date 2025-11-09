@@ -28549,9 +28549,10 @@ function zoomIn(cscale) {
     document.getElementById("too_small_message").style["display"] = "none";
   }
 
+  scale += cscale;
+  
   pdf.getPage(1).then((page) => {
-    renderDocument(page, (scale += cscale));
-    center();
+    renderDocument(page, scale);
   });
 }
 
@@ -28561,9 +28562,10 @@ function zoomOut(cscale) {
     return;
   }
 
+  scale -= cscale;
+  
   pdf.getPage(1).then((page) => {
-    renderDocument(page, (scale -= cscale));
-    center();
+    renderDocument(page, scale);
   });
 }
 
