@@ -39,7 +39,7 @@ loadingTask.promise.then((_pdf) => {
 });
 
 function toggleAttention(shouldAttention) {
-  for (let element of document.getElementsByClassName("zoom_btn")) {
+  for (let element of document.getElementsByClassName("zoom-btn")) {
     if (shouldAttention) {
       element.classList.add("attention");
     } else {
@@ -50,11 +50,11 @@ function toggleAttention(shouldAttention) {
 
 function zoomIn(cscale) {
   if ((isMobile() && scale > MOBILE_SCALE) || scale > BROWSER_SCALE) {
-    document.getElementById("canvas_wrap").style["overflow"] = "auto";
+    document.getElementById("canvas-wrap").style["overflow"] = "auto";
   }
 
   if (scale <= TOO_SMALL_SCALE) {
-    document.getElementById("too_small_message").style["display"] = "none";
+    document.getElementById("too-small-message").style["display"] = "none";
   }
 
   scale += cscale;
@@ -66,7 +66,7 @@ function zoomIn(cscale) {
 
 function zoomOut(cscale) {
   if (scale <= TOO_SMALL_SCALE) {
-    document.getElementById("too_small_message").style["display"] = "block";
+    document.getElementById("too-small-message").style["display"] = "block";
     return;
   }
 
@@ -78,7 +78,7 @@ function zoomOut(cscale) {
 }
 
 function center() {
-  const canvasWrap = document.getElementById("canvas_wrap");
+  const canvasWrap = document.getElementById("canvas-wrap");
 
   // Calculate zoom to fit width with reasonable padding (90% of viewport width)
   const targetWidth = canvasWrap.offsetWidth * 0.9;
@@ -97,7 +97,7 @@ function center() {
       canvasWrap.scrollTop = 0;
       canvasWrap.scrollLeft = Math.max(
         0,
-        (document.getElementById("resume_canvas").offsetWidth -
+        (document.getElementById("resume-canvas").offsetWidth -
           canvasWrap.offsetWidth) /
         2
       );
@@ -113,7 +113,7 @@ function renderDocument(page, scale) {
   }
 
   let viewport = page.getViewport({ scale: scale });
-  let canvas = document.getElementById("resume_canvas");
+  let canvas = document.getElementById("resume-canvas");
   let context = canvas.getContext("2d");
 
   const resolution = 1.4;
@@ -213,12 +213,12 @@ var dialogEl;
 
 // Make sure dialogEl is accessible to openLinks
 window.addEventListener("load", function () {
-  dialogEl = document.getElementById("links_dialog");
+  dialogEl = document.getElementById("links-dialog");
 });
 
 document.addEventListener("DOMContentLoaded", function () {
   // links dialog
-  dialogEl = document.getElementById("links_dialog");
+  dialogEl = document.getElementById("links-dialog");
   dialog = new A11yDialog(dialogEl);
   const linksBtn = document.getElementById("b4");
 
@@ -230,7 +230,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     pdf.getPage(1).then((page) => {
       page.getAnnotations().then((annotations) => {
-        const linksAreaEl = document.getElementById("links_area");
+        const linksAreaEl = document.getElementById("links-area");
         linksAreaEl.innerHTML = ""; // destroy to avoid collecting
 
         // Remove duplicates using Set
@@ -259,7 +259,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // drag scroll
 document.addEventListener("DOMContentLoaded", function () {
-  const canvasWrap = document.getElementById("canvas_wrap");
+  const canvasWrap = document.getElementById("canvas-wrap");
   let pos = { top: 0, left: 0, x: 0, y: 0 };
 
   const mouseDownHandler = function (e) {
@@ -347,7 +347,7 @@ document.addEventListener("keydown", function (e) {
   if (
     e.target.tagName === "INPUT" ||
     e.target.tagName === "TEXTAREA" ||
-    document.getElementById("links_dialog").getAttribute("aria-hidden") ===
+    document.getElementById("links-dialog").getAttribute("aria-hidden") ===
     "false"
   ) {
     return;

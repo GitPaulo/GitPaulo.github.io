@@ -573,7 +573,8 @@ ___CSS_LOADER_EXPORT___.i(_node_modules_css_loader_dist_cjs_js_node_modules_toas
 ___CSS_LOADER_EXPORT___.push([module.id, "@import url(https://fonts.googleapis.com/css?family=Roboto);"]);
 // Module
 ___CSS_LOADER_EXPORT___.push([module.id, `:root {
-  --font-base: "Roboto", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  --font-base:
+    "Roboto", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
   --color-bg: rgb(58, 57, 57);
   --color-primary: #0074d9;
   --color-accent: #eb5454;
@@ -646,7 +647,7 @@ h1 {
 }
 
 /* Layout controls and wrappers */
-#button_area {
+#button-area {
   position: fixed;
   inset-block-start: 20px;
   inset-inline-end: 20px;
@@ -663,15 +664,17 @@ h1 {
   z-index: 1000;
 }
 
-#canvas_wrap {
+#canvas-wrap {
   height: 100%;
-  text-align: center;
   cursor: grab;
   overflow: auto;
   padding: 4%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
 }
 
-#canvas_wrap:focus {
+#canvas-wrap:focus {
   outline: none;
 }
 
@@ -680,13 +683,13 @@ h1 {
   display: inline-block;
 }
 
-#too_small_message {
+#too-small-message {
   display: none;
   color: red;
   font-family: var(--font-base);
 }
 
-#resume_canvas {
+#resume-canvas {
   border: 1px solid #000;
 }
 
@@ -712,14 +715,17 @@ h1 {
 }
 
 /* Zoom buttons */
-.zoom_btn {
+.zoom-btn {
   padding: 8px 16px;
   background: rgba(255, 255, 255, 0.95);
   border-radius: var(--radius-pill);
   border: none;
   cursor: pointer;
   font-size: 14px;
-  transition: transform var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast);
+  transition:
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast),
+    background var(--transition-fast);
   box-shadow: var(--elev-sm);
   display: flex;
   align-items: center;
@@ -730,38 +736,37 @@ h1 {
 }
 
 /* Hide icons on desktop */
-.zoom_btn .btn-icon {
+.zoom-btn .btn-icon {
   display: none;
 }
 
-.zoom_btn:hover {
+.zoom-btn:hover {
   transform: translateY(-2px) scale(1);
   box-shadow: var(--elev-md);
   background: #fff;
 }
 
-.zoom_btn:focus,
-.zoom_btn:focus-visible {
+.zoom-btn:focus,
+.zoom-btn:focus-visible {
   outline: var(--focus-ring);
   outline-offset: var(--focus-offset);
 }
 
-.zoom_btn:active {
+.zoom-btn:active {
   transform: translateY(0) scale(1);
   box-shadow: var(--elev-sm);
 }
 
-.zoom_btn.active {
+.zoom-btn.active {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
 
-.zoom_btn.attention {
+.zoom-btn.attention {
   animation: flicker 0.8s ease-in-out infinite;
 }
 
 @keyframes flicker {
-
   0%,
   100% {
     outline: 2px solid transparent;
@@ -813,7 +818,9 @@ a {
   margin: auto;
   z-index: 2;
   position: relative;
-  animation: fade-in 400ms 200ms both, slide-up 400ms 200ms both;
+  animation:
+    fade-in 400ms 200ms both,
+    slide-up 400ms 200ms both;
   padding: 2em;
   max-width: 90%;
   width: 500px;
@@ -854,14 +861,14 @@ a {
   font-family: var(--font-base);
 }
 
-#links_area {
+#links-area {
   display: flex;
   flex-direction: column;
   gap: 12px;
   font-family: var(--font-base);
 }
 
-#links_area a {
+#links-area a {
   padding: 12px 16px;
   background: rgba(0, 0, 0, 0.08);
   border-radius: var(--radius-md);
@@ -871,14 +878,14 @@ a {
   border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-#links_area a:hover {
+#links-area a:hover {
   background: rgba(0, 0, 0, 0.12);
   transform: translateX(4px);
   border-color: rgba(0, 0, 0, 0.1);
 }
 
-#links_area a:focus,
-#links_area a:focus-visible {
+#links-area a:focus,
+#links-area a:focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
   background: rgba(0, 0, 0, 0.12);
@@ -941,12 +948,12 @@ a {
     padding: 8px;
   }
 
-  #button_area {
+  #button-area {
     inset-block-start: 75px;
     inset-inline-end: 15px;
   }
 
-  .zoom_btn {
+  .zoom-btn {
     padding: 6px;
     font-size: 16px;
     gap: 0;
@@ -959,13 +966,13 @@ a {
   }
 
   /* Show icons on mobile, hide text */
-  .zoom_btn .btn-icon {
+  .zoom-btn .btn-icon {
     display: inline;
     font-size: 16px;
     color: #000;
   }
 
-  .zoom_btn .btn-text {
+  .zoom-btn .btn-text {
     display: none;
   }
 
@@ -992,7 +999,6 @@ a {
 
 /* Respect reduced motion preference */
 @media (prefers-reduced-motion: reduce) {
-
   *,
   *::before,
   *::after {
@@ -1013,7 +1019,6 @@ a {
 
 /* High contrast mode support */
 @media (prefers-contrast: high) {
-
   .zoom_btn,
   .github-icon {
     border: 2px solid currentColor;
@@ -28545,7 +28550,7 @@ loadingTask.promise.then((_pdf) => {
 });
 
 function toggleAttention(shouldAttention) {
-  for (let element of document.getElementsByClassName("zoom_btn")) {
+  for (let element of document.getElementsByClassName("zoom-btn")) {
     if (shouldAttention) {
       element.classList.add("attention");
     } else {
@@ -28556,11 +28561,11 @@ function toggleAttention(shouldAttention) {
 
 function zoomIn(cscale) {
   if ((is_mobile__WEBPACK_IMPORTED_MODULE_2__() && scale > MOBILE_SCALE) || scale > BROWSER_SCALE) {
-    document.getElementById("canvas_wrap").style["overflow"] = "auto";
+    document.getElementById("canvas-wrap").style["overflow"] = "auto";
   }
 
   if (scale <= TOO_SMALL_SCALE) {
-    document.getElementById("too_small_message").style["display"] = "none";
+    document.getElementById("too-small-message").style["display"] = "none";
   }
 
   scale += cscale;
@@ -28572,7 +28577,7 @@ function zoomIn(cscale) {
 
 function zoomOut(cscale) {
   if (scale <= TOO_SMALL_SCALE) {
-    document.getElementById("too_small_message").style["display"] = "block";
+    document.getElementById("too-small-message").style["display"] = "block";
     return;
   }
 
@@ -28584,7 +28589,7 @@ function zoomOut(cscale) {
 }
 
 function center() {
-  const canvasWrap = document.getElementById("canvas_wrap");
+  const canvasWrap = document.getElementById("canvas-wrap");
 
   // Calculate zoom to fit width with reasonable padding (90% of viewport width)
   const targetWidth = canvasWrap.offsetWidth * 0.9;
@@ -28603,9 +28608,9 @@ function center() {
       canvasWrap.scrollTop = 0;
       canvasWrap.scrollLeft = Math.max(
         0,
-        (document.getElementById("resume_canvas").offsetWidth -
+        (document.getElementById("resume-canvas").offsetWidth -
           canvasWrap.offsetWidth) /
-        2
+          2
       );
     }, 50);
   });
@@ -28619,7 +28624,7 @@ function renderDocument(page, scale) {
   }
 
   let viewport = page.getViewport({ scale: scale });
-  let canvas = document.getElementById("resume_canvas");
+  let canvas = document.getElementById("resume-canvas");
   let context = canvas.getContext("2d");
 
   const resolution = 1.4;
@@ -28719,12 +28724,12 @@ var dialogEl;
 
 // Make sure dialogEl is accessible to openLinks
 window.addEventListener("load", function () {
-  dialogEl = document.getElementById("links_dialog");
+  dialogEl = document.getElementById("links-dialog");
 });
 
 document.addEventListener("DOMContentLoaded", function () {
   // links dialog
-  dialogEl = document.getElementById("links_dialog");
+  dialogEl = document.getElementById("links-dialog");
   dialog = new a11y_dialog__WEBPACK_IMPORTED_MODULE_4__["default"](dialogEl);
   const linksBtn = document.getElementById("b4");
 
@@ -28736,7 +28741,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     pdf.getPage(1).then((page) => {
       page.getAnnotations().then((annotations) => {
-        const linksAreaEl = document.getElementById("links_area");
+        const linksAreaEl = document.getElementById("links-area");
         linksAreaEl.innerHTML = ""; // destroy to avoid collecting
 
         // Remove duplicates using Set
@@ -28765,7 +28770,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // drag scroll
 document.addEventListener("DOMContentLoaded", function () {
-  const canvasWrap = document.getElementById("canvas_wrap");
+  const canvasWrap = document.getElementById("canvas-wrap");
   let pos = { top: 0, left: 0, x: 0, y: 0 };
 
   const mouseDownHandler = function (e) {
@@ -28853,8 +28858,8 @@ document.addEventListener("keydown", function (e) {
   if (
     e.target.tagName === "INPUT" ||
     e.target.tagName === "TEXTAREA" ||
-    document.getElementById("links_dialog").getAttribute("aria-hidden") ===
-    "false"
+    document.getElementById("links-dialog").getAttribute("aria-hidden") ===
+      "false"
   ) {
     return;
   }

@@ -10,19 +10,21 @@
 </head>
 
 <body>
-  <a href="#canvas_wrap" class="skip-link">Skip to resume</a>
+  <a href="#canvas-wrap" class="skip-link">Skip to resume</a>
 
-  <div id="links_dialog" class="dialog-container" aria-hidden="true" aria-labelledby="links_dialog_title"
-    aria-describedby="links_dialog_desc">
+  <div id="links-dialog" class="dialog-container" aria-hidden="true" aria-labelledby="links-dialog-title"
+    aria-describedby="links-dialog-desc">
     <div class="dialog-overlay" data-a11y-dialog-hide></div>
     <div class="dialog-content" role="document">
-      <h1 id="links_dialog_title">Links</h1>
-      <p id="links_dialog_desc" class="dialog-description">Links are extracted from document.</p>
-      <div id="links_area"></div>
+      <h1 id="links-dialog-title">Links</h1>
+      <p id="links-dialog-desc" class="dialog-description">
+        Links are extracted from document.
+      </p>
+      <div id="links-area"></div>
     </div>
   </div>
 
-  <div id="button_area">
+  <div id="button-area">
     <button class="github-icon" type="button" onclick="window.location.href = 'https://github.com/GitPaulo';"
       title="View on GitHub" aria-label="View on GitHub">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"
@@ -34,29 +36,29 @@
   </div>
 
   <div id="controls" role="toolbar" aria-label="PDF viewer controls">
-    <button class="zoom_btn" id="b1" type="button" title="Zoom In" aria-label="Zoom In" onclick="zoomIn(0.25)">
+    <button class="zoom-btn" id="b1" type="button" title="Zoom In" aria-label="Zoom In" onclick="zoomIn(0.25)">
       <span class="btn-icon" aria-hidden="true">+</span><span class="btn-text">Zoom In</span>
     </button>
-    <button class="zoom_btn" id="b2" type="button" title="Download" aria-label="Download PDF" onclick="download()">
+    <button class="zoom-btn" id="b2" type="button" title="Download" aria-label="Download PDF" onclick="download()">
       <span class="btn-icon" aria-hidden="true">↓</span><span class="btn-text">Download</span>
     </button>
-    <button class="zoom_btn" id="b3" type="button" title="Center" aria-label="Center and fit document"
+    <button class="zoom-btn" id="b3" type="button" title="Center" aria-label="Center and fit document"
       onclick="center()">
       <span class="btn-icon" aria-hidden="true">◉</span><span class="btn-text">Center</span>
     </button>
-    <button class="zoom_btn" id="b4" type="button" title="Links" aria-label="Show document links" onclick="openLinks()">
+    <button class="zoom-btn" id="b4" type="button" title="Links" aria-label="Show document links" onclick="openLinks()">
       <span class="btn-icon" aria-hidden="true">⚯</span><span class="btn-text">Links</span>
     </button>
-    <button class="zoom_btn" id="b5" type="button" title="Zoom Out" aria-label="Zoom Out" onclick="zoomOut(0.25)">
+    <button class="zoom-btn" id="b5" type="button" title="Zoom Out" aria-label="Zoom Out" onclick="zoomOut(0.25)">
       <span class="btn-icon" aria-hidden="true">−</span><span class="btn-text">Zoom Out</span>
     </button>
   </div>
 
-  <div id="canvas_wrap" role="document" aria-label="Resume PDF viewer">
+  <div id="canvas-wrap" role="document" aria-label="Resume PDF viewer">
     <div id="pdf-container">
-      <canvas id="resume_canvas" aria-label="Paulo's Resume"></canvas>
+      <canvas id="resume-canvas" aria-label="Paulo's Resume"></canvas>
     </div>
-    <div id="too_small_message" role="alert" aria-live="polite">
+    <div id="too-small-message" role="alert" aria-live="polite">
       <h1>Canvas is too small!</h1>
     </div>
   </div>
