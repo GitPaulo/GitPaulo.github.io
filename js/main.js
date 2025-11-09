@@ -63,7 +63,7 @@ loadingTask.promise
           toggleAttention(false)
         );
       } else {
-        notify("👋 Hey there, please use the zoom buttons!", () =>
+        notify("👋 Hey 💻, please use the zoom buttons and drag with mouse!", () =>
           toggleAttention(false)
         );
       }
