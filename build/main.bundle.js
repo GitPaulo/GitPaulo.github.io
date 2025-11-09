@@ -572,61 +572,99 @@ var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBP
 ___CSS_LOADER_EXPORT___.i(_node_modules_css_loader_dist_cjs_js_node_modules_toastify_js_src_toastify_css__WEBPACK_IMPORTED_MODULE_2__["default"]);
 ___CSS_LOADER_EXPORT___.push([module.id, "@import url(https://fonts.googleapis.com/css?family=Roboto);"]);
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, `html {
+___CSS_LOADER_EXPORT___.push([module.id, `:root {
+  --font-base: "Roboto", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  --color-bg: rgb(58, 57, 57);
+  --color-primary: #0074d9;
+  --color-accent: #eb5454;
+  --color-text: #333;
+  --color-text-muted: #666;
+  --elev-sm: 0 2px 8px rgba(0, 0, 0, 0.15);
+  --elev-md: 0 4px 12px rgba(0, 0, 0, 0.25);
+  --elev-lg: 0 8px 32px rgba(0, 0, 0, 0.3);
+  --focus-ring: 3px solid #0074d9;
+  --focus-offset: 2px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 16px;
+  --radius-pill: 24px;
+  --transition-fast: 0.2s ease;
+  --transition-med: 0.3s ease;
+}
+
+/* Base */
+html,
+body {
   height: 100%;
   width: 100%;
 }
 
-* {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--color-bg);
+  font-family: var(--font-base);
+  margin: 0;
 }
 
 p {
   margin: 0;
 }
 
-body {
-  display: flex;
-  height: 100%;
-  flex-direction: column;
-  overflow: hidden;
-  background: rgb(58, 57, 57);
+h1 {
+  font-size: 1.6em;
+  line-height: 1.1;
+  font-family: var(--font-base);
 }
 
 /* Skip link for accessibility */
 .skip-link {
   position: absolute;
-  top: -40px;
-  left: 0;
-  background: #0074d9;
-  color: white;
+  inset-block-start: -40px;
+  inset-inline-start: 0;
+  background: var(--color-primary);
+  color: #fff;
   padding: 8px 16px;
   text-decoration: none;
   z-index: 10000;
-  border-radius: 0 0 4px 0;
-  font-family: "Roboto", monospace;
+  border-radius: 0 0 var(--radius-sm) 0;
+  font-family: var(--font-base);
 }
 
-.skip-link:focus {
-  top: 0;
-  outline: 3px solid #ffffff;
-  outline-offset: 2px;
+.skip-link:focus,
+.skip-link:focus-visible {
+  inset-block-start: 0;
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-offset);
 }
 
-h1 {
-  font-size: 1.6em;
-  line-height: 1.1;
-  font-family: "Roboto", monospace;
-}
-
+/* Layout controls and wrappers */
 #button_area {
   position: fixed;
-  top: 20px;
-  right: 20px;
+  inset-block-start: 20px;
+  inset-inline-end: 20px;
+  z-index: 1000;
+}
+
+#controls {
+  position: fixed;
+  inset-block-start: 20px;
+  inset-inline-start: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
   z-index: 1000;
 }
 
 #canvas_wrap {
+  height: 100%;
   text-align: center;
   cursor: grab;
   overflow: auto;
@@ -645,11 +683,11 @@ h1 {
 #too_small_message {
   display: none;
   color: red;
-  font-family: "Roboto", monospace;
+  font-family: var(--font-base);
 }
 
 #resume_canvas {
-  border: 1px solid black;
+  border: 1px solid #000;
 }
 
 /* PDF Link Highlights */
@@ -657,7 +695,7 @@ h1 {
   background: rgba(0, 116, 217, 0.15);
   border: 1px solid rgba(0, 116, 217, 0.3);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all var(--transition-fast);
   z-index: 10;
 }
 
@@ -666,38 +704,27 @@ h1 {
   border-color: rgba(0, 116, 217, 0.5);
 }
 
-.pdf-link-highlight:focus {
-  outline: 2px solid #0074d9;
+.pdf-link-highlight:focus,
+.pdf-link-highlight:focus-visible {
+  outline: 2px solid var(--color-primary);
   outline-offset: 2px;
   background: rgba(0, 116, 217, 0.3);
 }
 
-#controls {
-  position: fixed;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 8px;
-  z-index: 1000;
-}
-
+/* Zoom buttons */
 .zoom_btn {
   padding: 8px 16px;
   background: rgba(255, 255, 255, 0.95);
-  border-radius: 24px;
+  border-radius: var(--radius-pill);
   border: none;
   cursor: pointer;
   font-size: 14px;
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease,
-    background 0.2s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast);
+  box-shadow: var(--elev-sm);
   display: flex;
   align-items: center;
   gap: 6px;
-  font-family: "Roboto", monospace;
+  font-family: var(--font-base);
   white-space: nowrap;
   transform: translateY(0) scale(1);
 }
@@ -709,22 +736,23 @@ h1 {
 
 .zoom_btn:hover {
   transform: translateY(-2px) scale(1);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-  background: rgba(255, 255, 255, 1);
+  box-shadow: var(--elev-md);
+  background: #fff;
 }
 
-.zoom_btn:focus {
-  outline: 3px solid #0074d9;
-  outline-offset: 2px;
+.zoom_btn:focus,
+.zoom_btn:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-offset);
 }
 
 .zoom_btn:active {
   transform: translateY(0) scale(1);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--elev-sm);
 }
 
 .zoom_btn.active {
-  outline: 2px solid #0074d9;
+  outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
 
@@ -733,42 +761,39 @@ h1 {
 }
 
 @keyframes flicker {
+
   0%,
   100% {
     outline: 2px solid transparent;
   }
 
   50% {
-    outline: 2px solid #eb5454;
+    outline: 2px solid var(--color-primary);
     outline-offset: 2px;
   }
 }
 
 .toast {
-  font-family: "Roboto", monospace !important;
-  background: #eb5454;
+  font-family: var(--font-base) !important;
+  background: var(--color-primary) !important;
+  color: white !important;
 }
 
 /*
   Links
 */
-
 a {
   text-decoration: none;
-  color: #0074d9;
+  color: var(--color-primary);
 }
 
 /*
   Dialog
 */
-
 .dialog-container {
   display: flex;
   position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
+  inset: 0;
   z-index: 2;
 }
 
@@ -778,10 +803,7 @@ a {
 
 .dialog-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
+  inset: 0;
   background-color: rgba(43, 46, 56, 0.9);
   animation: fade-in 200ms both;
 }
@@ -791,14 +813,12 @@ a {
   margin: auto;
   z-index: 2;
   position: relative;
-  animation:
-    fade-in 400ms 200ms both,
-    slide-up 400ms 200ms both;
+  animation: fade-in 400ms 200ms both, slide-up 400ms 200ms both;
   padding: 2em;
   max-width: 90%;
   width: 500px;
-  border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--elev-lg);
 }
 
 @media screen and (min-width: 700px) {
@@ -824,28 +844,28 @@ a {
   font-size: 1.5em;
   font-weight: 500;
   text-align: center;
-  color: #333;
+  color: var(--color-text);
 }
 
 .dialog-description {
   margin: 0 0 1.5em 0;
-  color: #666;
+  color: var(--color-text-muted);
   font-size: 0.9em;
-  font-family: "Roboto", monospace;
+  font-family: var(--font-base);
 }
 
 #links_area {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  font-family: "Roboto", monospace;
+  font-family: var(--font-base);
 }
 
 #links_area a {
   padding: 12px 16px;
   background: rgba(0, 0, 0, 0.08);
-  border-radius: 8px;
-  transition: all 0.2s ease;
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
   word-break: break-all;
   font-size: 14px;
   border: 1px solid rgba(0, 0, 0, 0.05);
@@ -857,8 +877,9 @@ a {
   border-color: rgba(0, 0, 0, 0.1);
 }
 
-#links_area a:focus {
-  outline: 2px solid #0074d9;
+#links_area a:focus,
+#links_area a:focus-visible {
+  outline: 2px solid var(--color-primary);
   outline-offset: 2px;
   background: rgba(0, 0, 0, 0.12);
 }
@@ -866,15 +887,14 @@ a {
 /*
   Github Icon Button
 */
-
 .github-icon {
-  width: 48px;
-  height: 48px;
+  inline-size: 48px;
+  block-size: 48px;
   padding: 10px;
   background: rgba(255, 255, 255, 0.95);
   border-radius: 50%;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  transition: all var(--transition-med);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
   display: flex;
   align-items: center;
@@ -883,19 +903,20 @@ a {
 }
 
 .github-icon svg {
-  width: 100%;
-  height: 100%;
-  transition: transform 0.3s ease;
+  inline-size: 100%;
+  block-size: 100%;
+  transition: transform var(--transition-med);
 }
 
 .github-icon:hover {
   transform: translateY(-5px) scale(1.1);
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-  background: rgba(255, 255, 255, 1);
+  background: #fff;
 }
 
-.github-icon:focus {
-  outline: 3px solid #0074d9;
+.github-icon:focus,
+.github-icon:focus-visible {
+  outline: var(--focus-ring);
   outline-offset: 3px;
 }
 
@@ -905,32 +926,33 @@ a {
 }
 
 .github-icon svg path {
-  transition: fill 0.3s ease;
+  transition: fill var(--transition-med);
 }
 
 .github-icon:hover svg {
   transform: rotate(360deg);
 }
 
+/* Responsive */
 @media only screen and (max-width: 750px) {
   .github-icon {
-    width: 40px;
-    height: 40px;
+    inline-size: 40px;
+    block-size: 40px;
     padding: 8px;
   }
 
   #button_area {
-    top: 75px;
-    right: 15px;
+    inset-block-start: 75px;
+    inset-inline-end: 15px;
   }
 
   .zoom_btn {
     padding: 6px;
     font-size: 16px;
     gap: 0;
-    min-width: 36px;
-    width: 36px;
-    height: 36px;
+    min-inline-size: 36px;
+    inline-size: 36px;
+    block-size: 36px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -948,17 +970,17 @@ a {
   }
 
   #controls {
-    top: 15px;
+    inset-block-start: 15px;
     gap: 6px;
     flex-wrap: wrap;
-    max-width: 90vw;
+    max-inline-size: 90vw;
   }
 
   /* Make canvas responsive on mobile */
   #resume_canvas {
-    max-width: 100%;
-    height: auto !important;
-    width: auto !important;
+    max-inline-size: 100%;
+    block-size: auto !important;
+    inline-size: auto !important;
   }
 }
 
@@ -970,6 +992,7 @@ a {
 
 /* Respect reduced motion preference */
 @media (prefers-reduced-motion: reduce) {
+
   *,
   *::before,
   *::after {
@@ -990,6 +1013,7 @@ a {
 
 /* High contrast mode support */
 @media (prefers-contrast: high) {
+
   .zoom_btn,
   .github-icon {
     border: 2px solid currentColor;
@@ -28495,7 +28519,7 @@ pdfjs_dist__WEBPACK_IMPORTED_MODULE_3__.GlobalWorkerOptions.workerSrc = "build/m
 const loadingTask = pdfjs_dist__WEBPACK_IMPORTED_MODULE_3__.getDocument("resources/paulo_resume.pdf");
 
 const MOBILE_SCALE = 0.75;
-const BROWSER_SCALE = 1.25;
+const BROWSER_SCALE = 1.5;
 const TOO_SMALL_SCALE = 0.25;
 
 let scale;
@@ -28581,7 +28605,7 @@ function center() {
         0,
         (document.getElementById("resume_canvas").offsetWidth -
           canvasWrap.offsetWidth) /
-          2
+        2
       );
     }, 50);
   });
@@ -28663,7 +28687,7 @@ function highlightLinks(page, viewport) {
 function notify(message, cb) {
   toastify_js__WEBPACK_IMPORTED_MODULE_1__({
     text: message,
-    duration: 2000,
+    duration: 3000,
     className: "toast",
     gravity: "bottom", // `top` or `bottom`
     position: "center", // `left`, `center` or `right`
@@ -28830,7 +28854,7 @@ document.addEventListener("keydown", function (e) {
     e.target.tagName === "INPUT" ||
     e.target.tagName === "TEXTAREA" ||
     document.getElementById("links_dialog").getAttribute("aria-hidden") ===
-      "false"
+    "false"
   ) {
     return;
   }

@@ -13,7 +13,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = "build/main.bundle.worker.js";
 const loadingTask = pdfjsLib.getDocument("resources/paulo_resume.pdf");
 
 const MOBILE_SCALE = 0.75;
-const BROWSER_SCALE = 1.25;
+const BROWSER_SCALE = 1.5;
 const TOO_SMALL_SCALE = 0.25;
 
 let scale;
@@ -181,7 +181,7 @@ function highlightLinks(page, viewport) {
 function notify(message, cb) {
   Toastify({
     text: message,
-    duration: 2000,
+    duration: 3000,
     className: "toast",
     gravity: "bottom", // `top` or `bottom`
     position: "center", // `left`, `center` or `right`

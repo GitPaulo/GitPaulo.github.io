@@ -93,6 +93,7 @@ h1 {
 }
 
 #canvas_wrap {
+  height: 100%;
   text-align: center;
   cursor: grab;
   overflow: auto;
@@ -196,14 +197,15 @@ h1 {
   }
 
   50% {
-    outline: 2px solid var(--color-accent);
+    outline: 2px solid var(--color-primary);
     outline-offset: 2px;
   }
 }
 
 .toast {
   font-family: var(--font-base) !important;
-  background: var(--color-accent);
+  background: var(--color-primary) !important;
+  color: white !important;
 }
 
 /*
