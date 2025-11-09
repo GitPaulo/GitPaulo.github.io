@@ -6,7 +6,7 @@ module.exports = {
   context: __dirname,
   entry: {
     "main.bundle": "./js/main.js",
-    "main.bundle.worker": "./node_modules/pdfjs-dist/build/pdf.worker.entry",
+    "main.bundle.worker": "./node_modules/pdfjs-dist/build/pdf.worker.mjs",
   },
   mode: "none",
   output: {

@@ -5,9 +5,12 @@ require("../css/style.css");
 const Toastify = require("toastify-js");
 const isMobile = require("is-mobile");
 const pdfjsLib = require("pdfjs-dist");
+
+// Configure PDF.js worker
+pdfjsLib.GlobalWorkerOptions.workerSrc = "./build/main.bundle.worker.js";
+
 const loadingTask = pdfjsLib.getDocument("./resources/paulo_resume.pdf");
 
-// ?
 import A11yDialog from "a11y-dialog";
 
 const MOBILE_SCALE = 0.75;
@@ -23,13 +26,11 @@ loadingTask.promise.then((_pdf) => {
     toggleAttention(true);
     if (isMobile()) {
       renderDocument(page, (scale = MOBILE_SCALE));
-      document.getElementById("btn_label").innerText = "📱 GitHub";
       notify("👋 Hi 📱, please use zoom buttons!", () =>
         toggleAttention(false)
       );
     } else {
       renderDocument(page, (scale = BROWSER_SCALE));
-      document.getElementById("btn_label").innerText = "Return to GitHub";
       notify("👋 Hey there, please use the zoom buttons!", () =>
         toggleAttention(false)
       );
@@ -132,7 +133,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const dialogEl = document.getElementById("links_dialog");
   dialog = new A11yDialog(dialogEl);
 
-  dialog.on("show", function (dialogEl, triggerEl) {
+  dialog.on("show", function () {
     pdf.getPage(1).then((page) => {
       page.getAnnotations().then((annotations) => {
         const linksAreaEl = document.getElementById("links_area");
@@ -197,10 +198,8 @@ window.matchMedia("(max-width: 750px)").addEventListener("change", (media) => {
   let pagePromise = pdf.getPage(1);
   if (media.matches) {
     pagePromise.then((page) => renderDocument(page, (scale = 0.7)));
-    document.getElementById("btn_label").innerText = "📱 GitHub";
   } else {
     pagePromise.then((page) => renderDocument(page, (scale = 1.25)));
-    document.getElementById("btn_label").innerText = "Return to GitHub";
   }
 });
 
