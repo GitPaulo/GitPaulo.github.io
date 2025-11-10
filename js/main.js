@@ -1,7 +1,5 @@
-// css
 import "../css/style.css";
 
-// libs
 import Toastify from "toastify-js";
 import isMobile from "is-mobile";
 import * as pdfjsLib from "pdfjs-dist";
@@ -22,8 +20,9 @@ const TOO_SMALL_SCALE = 0.25;
 let scale;
 let pdf;
 let currentRenderTask = null;
+let isCentered = false;
+let centeredScale = null;
 
-// Show UI elements after PDF is loaded
 function showUI() {
   const pdfContainer = document.getElementById("pdf-container");
   const loadingSpinner = document.getElementById("loading-spinner");
@@ -40,6 +39,23 @@ function showUI() {
   pdfContainer.classList.add("loaded");
   buttonArea.classList.add("visible");
   controls.classList.add("visible");
+
+  // Add scroll listener to check centered state
+  const canvasWrap = document.getElementById("canvas-wrap");
+  canvasWrap.addEventListener("scroll", checkCenteredState);
+}
+
+function checkCenteredState() {
+  const canvasWrap = document.getElementById("canvas-wrap");
+  const isAtTop = canvasWrap.scrollTop <= 10;
+  const isAtCenteredZoom = centeredScale && Math.abs(scale - centeredScale) < 0.01;
+  
+  const shouldBeHidden = isAtTop && isAtCenteredZoom;
+  
+  if (shouldBeHidden !== isCentered) {
+    isCentered = shouldBeHidden;
+    updateCenterButton();
+  }
 }
 
 loadingTask.promise
@@ -48,11 +64,8 @@ loadingTask.promise
     return pdf.getPage(1);
   })
   .then((page) => {
-    if (isMobile()) {
-      renderDocument(page, (scale = MOBILE_SCALE));
-    } else {
-      renderDocument(page, (scale = BROWSER_SCALE));
-    }
+    // Start with centered view
+    center();
 
     // Show UI after render completes
     setTimeout(() => {
@@ -95,6 +108,7 @@ function zoomIn(cscale) {
 
   pdf.getPage(1).then((page) => {
     renderDocument(page, scale);
+    checkCenteredState();
   });
 }
 
@@ -108,6 +122,7 @@ function zoomOut(cscale) {
 
   pdf.getPage(1).then((page) => {
     renderDocument(page, scale);
+    checkCenteredState();
   });
 }
 
@@ -125,6 +140,7 @@ function center() {
     const reasonableScale = Math.max(0.5, Math.min(2.0, fitScale));
 
     renderDocument(page, (scale = reasonableScale));
+    centeredScale = reasonableScale;
 
     // Scroll to top
     setTimeout(() => {
@@ -135,8 +151,20 @@ function center() {
           canvasWrap.offsetWidth) /
         2
       );
+      checkCenteredState();
     }, 50);
   });
+}
+
+function updateCenterButton() {
+  const centerBtn = document.getElementById("b3");
+  if (!centerBtn) return;
+
+  if (isCentered) {
+    centerBtn.classList.add("hide-center-btn");
+  } else {
+    centerBtn.classList.remove("hide-center-btn");
+  }
 }
 
 function renderDocument(page, scale) {

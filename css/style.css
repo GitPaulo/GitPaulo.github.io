@@ -254,6 +254,15 @@ h1 {
   animation: flicker 0.8s ease-in-out infinite;
 }
 
+/* Center button hide/show animation */
+.zoom-btn.hide-center-btn {
+  animation: bounceOut 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.zoom-btn:not(.hide-center-btn) {
+  animation: bounceIn 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
 @keyframes flicker {
 
   0%,
@@ -264,6 +273,38 @@ h1 {
   50% {
     outline: 2px solid var(--color-primary);
     outline-offset: 2px;
+  }
+}
+
+@keyframes bounceOut {
+  0% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+  30% {
+    transform: scale(1.08) translateY(-2px);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(0) translateY(0);
+    opacity: 0;
+    display: none;
+    pointer-events: none;
+  }
+}
+
+@keyframes bounceIn {
+  0% {
+    transform: scale(0) translateY(10px);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.05) translateY(-2px);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
   }
 }
 
@@ -545,6 +586,10 @@ a {
     display: inline;
     font-size: 16px;
     color: #000;
+  }
+
+  .zoom-btn .btn-icon i {
+    font-size: 16px;
   }
 
   .zoom-btn .btn-text {

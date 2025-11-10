@@ -825,6 +825,15 @@ h1 {
   animation: flicker 0.8s ease-in-out infinite;
 }
 
+/* Center button hide/show animation */
+.zoom-btn.hide-center-btn {
+  animation: bounceOut 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.zoom-btn:not(.hide-center-btn) {
+  animation: bounceIn 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
 @keyframes flicker {
 
   0%,
@@ -835,6 +844,38 @@ h1 {
   50% {
     outline: 2px solid var(--color-primary);
     outline-offset: 2px;
+  }
+}
+
+@keyframes bounceOut {
+  0% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+  30% {
+    transform: scale(1.08) translateY(-2px);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(0) translateY(0);
+    opacity: 0;
+    display: none;
+    pointer-events: none;
+  }
+}
+
+@keyframes bounceIn {
+  0% {
+    transform: scale(0) translateY(10px);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.05) translateY(-2px);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
   }
 }
 
@@ -1116,6 +1157,10 @@ a {
     display: inline;
     font-size: 16px;
     color: #000;
+  }
+
+  .zoom-btn .btn-icon i {
+    font-size: 16px;
   }
 
   .zoom-btn .btn-text {
@@ -28664,10 +28709,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var is_mobile__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! is-mobile */ "./node_modules/is-mobile/index.js");
 /* harmony import */ var pdfjs_dist__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! pdfjs-dist */ "./node_modules/pdfjs-dist/build/pdf.mjs");
 /* harmony import */ var a11y_dialog__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! a11y-dialog */ "./node_modules/a11y-dialog/dist/a11y-dialog.esm.js");
-// css
 
 
-// libs
 
 
 
@@ -28688,8 +28731,9 @@ const TOO_SMALL_SCALE = 0.25;
 let scale;
 let pdf;
 let currentRenderTask = null;
+let isCentered = false;
+let centeredScale = null;
 
-// Show UI elements after PDF is loaded
 function showUI() {
   const pdfContainer = document.getElementById("pdf-container");
   const loadingSpinner = document.getElementById("loading-spinner");
@@ -28706,6 +28750,23 @@ function showUI() {
   pdfContainer.classList.add("loaded");
   buttonArea.classList.add("visible");
   controls.classList.add("visible");
+
+  // Add scroll listener to check centered state
+  const canvasWrap = document.getElementById("canvas-wrap");
+  canvasWrap.addEventListener("scroll", checkCenteredState);
+}
+
+function checkCenteredState() {
+  const canvasWrap = document.getElementById("canvas-wrap");
+  const isAtTop = canvasWrap.scrollTop <= 10;
+  const isAtCenteredZoom = centeredScale && Math.abs(scale - centeredScale) < 0.01;
+  
+  const shouldBeHidden = isAtTop && isAtCenteredZoom;
+  
+  if (shouldBeHidden !== isCentered) {
+    isCentered = shouldBeHidden;
+    updateCenterButton();
+  }
 }
 
 loadingTask.promise
@@ -28714,11 +28775,8 @@ loadingTask.promise
     return pdf.getPage(1);
   })
   .then((page) => {
-    if (is_mobile__WEBPACK_IMPORTED_MODULE_2__()) {
-      renderDocument(page, (scale = MOBILE_SCALE));
-    } else {
-      renderDocument(page, (scale = BROWSER_SCALE));
-    }
+    // Start with centered view
+    center();
 
     // Show UI after render completes
     setTimeout(() => {
@@ -28761,6 +28819,7 @@ function zoomIn(cscale) {
 
   pdf.getPage(1).then((page) => {
     renderDocument(page, scale);
+    checkCenteredState();
   });
 }
 
@@ -28774,6 +28833,7 @@ function zoomOut(cscale) {
 
   pdf.getPage(1).then((page) => {
     renderDocument(page, scale);
+    checkCenteredState();
   });
 }
 
@@ -28791,6 +28851,7 @@ function center() {
     const reasonableScale = Math.max(0.5, Math.min(2.0, fitScale));
 
     renderDocument(page, (scale = reasonableScale));
+    centeredScale = reasonableScale;
 
     // Scroll to top
     setTimeout(() => {
@@ -28801,8 +28862,20 @@ function center() {
           canvasWrap.offsetWidth) /
         2
       );
+      checkCenteredState();
     }, 50);
   });
+}
+
+function updateCenterButton() {
+  const centerBtn = document.getElementById("b3");
+  if (!centerBtn) return;
+
+  if (isCentered) {
+    centerBtn.classList.add("hide-center-btn");
+  } else {
+    centerBtn.classList.remove("hide-center-btn");
+  }
 }
 
 function renderDocument(page, scale) {
