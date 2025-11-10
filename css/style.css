@@ -116,9 +116,8 @@ h1 {
   cursor: grab;
   overflow: auto;
   padding: 4%;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
+  text-align: center;
+  -webkit-overflow-scrolling: touch;
 }
 
 #canvas-wrap:focus {
@@ -130,6 +129,7 @@ h1 {
   display: inline-block;
   opacity: 0;
   transition: opacity 0.3s ease-in-out;
+  text-align: left;
 }
 
 #pdf-container.loaded {
@@ -254,7 +254,6 @@ h1 {
 }
 
 @keyframes flicker {
-
   0%,
   100% {
     outline: 2px solid transparent;
@@ -446,7 +445,7 @@ a {
   width: 30px;
 }
 
-.copy-btn>* {
+.copy-btn > * {
   filter: grayscale(1);
 }
 
@@ -528,12 +527,12 @@ a {
   }
 
   .zoom-btn {
-    padding: 6px;
+    padding: 8px;
     font-size: 16px;
     gap: 0;
-    min-inline-size: 36px;
-    inline-size: 36px;
-    block-size: 36px;
+    min-inline-size: 38px;
+    inline-size: 38px;
+    block-size: 38px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -547,6 +546,11 @@ a {
   }
 
   .zoom-btn .btn-text {
+    display: none;
+  }
+
+  /* Hide copy buttons on mobile in links dialog */
+  .copy-btn {
     display: none;
   }
 
@@ -573,7 +577,6 @@ a {
 
 /* Respect reduced motion preference */
 @media (prefers-reduced-motion: reduce) {
-
   *,
   *::before,
   *::after {
@@ -594,7 +597,6 @@ a {
 
 /* High contrast mode support */
 @media (prefers-contrast: high) {
-
   .zoom_btn,
   .github-icon {
     border: 2px solid currentColor;

@@ -687,9 +687,8 @@ h1 {
   cursor: grab;
   overflow: auto;
   padding: 4%;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
+  text-align: center;
+  -webkit-overflow-scrolling: touch;
 }
 
 #canvas-wrap:focus {
@@ -701,6 +700,7 @@ h1 {
   display: inline-block;
   opacity: 0;
   transition: opacity 0.3s ease-in-out;
+  text-align: left;
 }
 
 #pdf-container.loaded {
@@ -825,7 +825,6 @@ h1 {
 }
 
 @keyframes flicker {
-
   0%,
   100% {
     outline: 2px solid transparent;
@@ -1017,7 +1016,7 @@ a {
   width: 30px;
 }
 
-.copy-btn>* {
+.copy-btn > * {
   filter: grayscale(1);
 }
 
@@ -1099,12 +1098,12 @@ a {
   }
 
   .zoom-btn {
-    padding: 6px;
+    padding: 8px;
     font-size: 16px;
     gap: 0;
-    min-inline-size: 36px;
-    inline-size: 36px;
-    block-size: 36px;
+    min-inline-size: 38px;
+    inline-size: 38px;
+    block-size: 38px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1118,6 +1117,11 @@ a {
   }
 
   .zoom-btn .btn-text {
+    display: none;
+  }
+
+  /* Hide copy buttons on mobile in links dialog */
+  .copy-btn {
     display: none;
   }
 
@@ -1144,7 +1148,6 @@ a {
 
 /* Respect reduced motion preference */
 @media (prefers-reduced-motion: reduce) {
-
   *,
   *::before,
   *::after {
@@ -1165,7 +1168,6 @@ a {
 
 /* High contrast mode support */
 @media (prefers-contrast: high) {
-
   .zoom_btn,
   .github-icon {
     border: 2px solid currentColor;
@@ -28715,13 +28717,9 @@ loadingTask.promise
     // Show UI after render completes
     setTimeout(() => {
       showUI();
-      toggleAttention(true);
       if (is_mobile__WEBPACK_IMPORTED_MODULE_2__()) {
+        toggleAttention(true);
         notify("👋 Hi 📱, please use zoom buttons!", () =>
-          toggleAttention(false)
-        );
-      } else {
-        notify("👋 Hey there, please use the zoom buttons!", () =>
           toggleAttention(false)
         );
       }
@@ -28795,7 +28793,7 @@ function center() {
         0,
         (document.getElementById("resume-canvas").offsetWidth -
           canvasWrap.offsetWidth) /
-        2
+          2
       );
     }, 50);
   });
@@ -28811,6 +28809,15 @@ function renderDocument(page, scale) {
   let viewport = page.getViewport({ scale: scale });
   let canvas = document.getElementById("resume-canvas");
   let context = canvas.getContext("2d");
+  const canvasWrap = document.getElementById("canvas-wrap");
+
+  // Store current scroll position and canvas dimensions
+  const oldScrollLeft = canvasWrap.scrollLeft;
+  const oldScrollTop = canvasWrap.scrollTop;
+  const oldCanvasWidth = canvas.offsetWidth || viewport.width;
+  const oldCanvasHeight = canvas.offsetHeight || viewport.height;
+  const oldViewportCenterX = oldScrollLeft + canvasWrap.offsetWidth / 2;
+  const oldViewportCenterY = oldScrollTop + canvasWrap.offsetHeight / 2;
 
   const resolution = 1.4;
   canvas.height = resolution * viewport.height;
@@ -28828,6 +28835,23 @@ function renderDocument(page, scale) {
   currentRenderTask.promise
     .then(() => {
       currentRenderTask = null;
+
+      // Adjust scroll position to maintain horizontal center and vertical position
+      const newCanvasWidth = viewport.width;
+      const newCanvasHeight = viewport.height;
+
+      // Calculate the ratio of size change
+      const scaleRatioX = newCanvasWidth / oldCanvasWidth;
+      const scaleRatioY = newCanvasHeight / oldCanvasHeight;
+
+      // Maintain horizontal center point, but keep vertical scroll proportional to top
+      const newScrollLeft =
+        oldViewportCenterX * scaleRatioX - canvasWrap.offsetWidth / 2;
+      const newScrollTop = oldScrollTop * scaleRatioY;
+
+      canvasWrap.scrollLeft = newScrollLeft;
+      canvasWrap.scrollTop = newScrollTop;
+
       // Highlight links after rendering
       highlightLinks(page, viewport);
     })
@@ -29098,7 +29122,7 @@ document.addEventListener("keydown", function (e) {
     e.target.tagName === "INPUT" ||
     e.target.tagName === "TEXTAREA" ||
     document.getElementById("links-dialog").getAttribute("aria-hidden") ===
-    "false"
+      "false"
   ) {
     return;
   }

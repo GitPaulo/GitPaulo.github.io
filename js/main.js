@@ -57,8 +57,8 @@ loadingTask.promise
     // Show UI after render completes
     setTimeout(() => {
       showUI();
-      toggleAttention(true);
       if (isMobile()) {
+        toggleAttention(true);
         notify("👋 Hi 📱, please use zoom buttons!", () =>
           toggleAttention(false)
         );
@@ -144,21 +144,27 @@ function center() {
 }
 
 function renderDocument(page, scale) {
-  // Cancel any pending render task
   if (currentRenderTask) {
     currentRenderTask.cancel();
     currentRenderTask = null;
   }
 
-  let viewport = page.getViewport({ scale: scale });
-  let canvas = document.getElementById("resume-canvas");
-  let context = canvas.getContext("2d");
+  const viewport = page.getViewport({ scale });
+  const canvas = document.getElementById("resume-canvas");
+  const context = canvas.getContext("2d");
+  const canvasWrap = document.getElementById("canvas-wrap");
+
+  // Capture current state for scroll position adjustment
+  const prevWidth = canvas.offsetWidth || viewport.width;
+  const prevHeight = canvas.offsetHeight || viewport.height;
+  const prevScrollLeft = canvasWrap.scrollLeft;
+  const prevScrollTop = canvasWrap.scrollTop;
+  const prevCenterX = prevScrollLeft + canvasWrap.offsetWidth / 2;
 
   const resolution = 1.4;
   canvas.height = resolution * viewport.height;
   canvas.width = resolution * viewport.width;
-
-  canvas.style.height = `${viewport.height}px`; //showing size will be smaller size
+  canvas.style.height = `${viewport.height}px`;
   canvas.style.width = `${viewport.width}px`;
 
   currentRenderTask = page.render({
@@ -170,7 +176,15 @@ function renderDocument(page, scale) {
   currentRenderTask.promise
     .then(() => {
       currentRenderTask = null;
-      // Highlight links after rendering
+
+      // Maintain top-center anchor: horizontal center, vertical top
+      const widthRatio = viewport.width / prevWidth;
+      const heightRatio = viewport.height / prevHeight;
+
+      canvasWrap.scrollLeft =
+        prevCenterX * widthRatio - canvasWrap.offsetWidth / 2;
+      canvasWrap.scrollTop = prevScrollTop * heightRatio;
+
       highlightLinks(page, viewport);
     })
     .catch((err) => {
