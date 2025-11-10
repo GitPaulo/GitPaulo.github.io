@@ -827,10 +827,16 @@ h1 {
 
 /* Center button hide/show animation */
 .zoom-btn.hide-center-btn {
+  opacity: 0;
+  transform: scale(0);
+  pointer-events: none;
+}
+
+#controls.visible .zoom-btn.hide-center-btn {
   animation: bounceOut 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 
-.zoom-btn:not(.hide-center-btn) {
+#controls.visible .zoom-btn:not(.hide-center-btn) {
   animation: bounceIn 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
@@ -852,10 +858,12 @@ h1 {
     transform: scale(1) translateY(0);
     opacity: 1;
   }
+
   30% {
     transform: scale(1.08) translateY(-2px);
     opacity: 0.9;
   }
+
   100% {
     transform: scale(0) translateY(0);
     opacity: 0;
@@ -869,10 +877,12 @@ h1 {
     transform: scale(0) translateY(10px);
     opacity: 0;
   }
+
   60% {
     transform: scale(1.05) translateY(-2px);
     opacity: 1;
   }
+
   100% {
     transform: scale(1) translateY(0);
     opacity: 1;
@@ -28760,9 +28770,9 @@ function checkCenteredState() {
   const canvasWrap = document.getElementById("canvas-wrap");
   const isAtTop = canvasWrap.scrollTop <= 10;
   const isAtCenteredZoom = centeredScale && Math.abs(scale - centeredScale) < 0.01;
-  
+
   const shouldBeHidden = isAtTop && isAtCenteredZoom;
-  
+
   if (shouldBeHidden !== isCentered) {
     isCentered = shouldBeHidden;
     updateCenterButton();
