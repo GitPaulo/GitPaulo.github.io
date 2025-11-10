@@ -150,7 +150,7 @@ function center() {
         0,
         (document.getElementById("resume-canvas").offsetWidth -
           canvasWrap.offsetWidth) /
-          2
+        2
       );
       checkCenteredState();
     }, 50);
@@ -481,7 +481,7 @@ document.addEventListener("keydown", function (e) {
     e.target.tagName === "INPUT" ||
     e.target.tagName === "TEXTAREA" ||
     document.getElementById("links-dialog").getAttribute("aria-hidden") ===
-      "false"
+    "false"
   ) {
     return;
   }
