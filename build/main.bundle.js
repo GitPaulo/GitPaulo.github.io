@@ -825,6 +825,7 @@ h1 {
 }
 
 @keyframes flicker {
+
   0%,
   100% {
     outline: 2px solid transparent;
@@ -1016,7 +1017,7 @@ a {
   width: 30px;
 }
 
-.copy-btn > * {
+.copy-btn>* {
   filter: grayscale(1);
 }
 
@@ -1128,7 +1129,6 @@ a {
   #controls {
     inset-block-start: 15px;
     gap: 6px;
-    flex-wrap: wrap;
     max-inline-size: 90vw;
   }
 
@@ -1148,6 +1148,7 @@ a {
 
 /* Respect reduced motion preference */
 @media (prefers-reduced-motion: reduce) {
+
   *,
   *::before,
   *::after {
@@ -1168,6 +1169,7 @@ a {
 
 /* High contrast mode support */
 @media (prefers-contrast: high) {
+
   .zoom_btn,
   .github-icon {
     border: 2px solid currentColor;
@@ -28722,6 +28724,10 @@ loadingTask.promise
         notify("👋 Hi 📱, please use zoom buttons!", () =>
           toggleAttention(false)
         );
+      } else {
+        notify("👋 Hey 💻, please use the zoom buttons and drag with mouse!", () =>
+          toggleAttention(false)
+        );
       }
     }, 100);
   })
@@ -28793,37 +28799,34 @@ function center() {
         0,
         (document.getElementById("resume-canvas").offsetWidth -
           canvasWrap.offsetWidth) /
-          2
+        2
       );
     }, 50);
   });
 }
 
 function renderDocument(page, scale) {
-  // Cancel any pending render task
   if (currentRenderTask) {
     currentRenderTask.cancel();
     currentRenderTask = null;
   }
 
-  let viewport = page.getViewport({ scale: scale });
-  let canvas = document.getElementById("resume-canvas");
-  let context = canvas.getContext("2d");
+  const viewport = page.getViewport({ scale });
+  const canvas = document.getElementById("resume-canvas");
+  const context = canvas.getContext("2d");
   const canvasWrap = document.getElementById("canvas-wrap");
 
-  // Store current scroll position and canvas dimensions
-  const oldScrollLeft = canvasWrap.scrollLeft;
-  const oldScrollTop = canvasWrap.scrollTop;
-  const oldCanvasWidth = canvas.offsetWidth || viewport.width;
-  const oldCanvasHeight = canvas.offsetHeight || viewport.height;
-  const oldViewportCenterX = oldScrollLeft + canvasWrap.offsetWidth / 2;
-  const oldViewportCenterY = oldScrollTop + canvasWrap.offsetHeight / 2;
+  // Capture current state for scroll position adjustment
+  const prevWidth = canvas.offsetWidth || viewport.width;
+  const prevHeight = canvas.offsetHeight || viewport.height;
+  const prevScrollLeft = canvasWrap.scrollLeft;
+  const prevScrollTop = canvasWrap.scrollTop;
+  const prevCenterX = prevScrollLeft + canvasWrap.offsetWidth / 2;
 
   const resolution = 1.4;
   canvas.height = resolution * viewport.height;
   canvas.width = resolution * viewport.width;
-
-  canvas.style.height = `${viewport.height}px`; //showing size will be smaller size
+  canvas.style.height = `${viewport.height}px`;
   canvas.style.width = `${viewport.width}px`;
 
   currentRenderTask = page.render({
@@ -28836,23 +28839,14 @@ function renderDocument(page, scale) {
     .then(() => {
       currentRenderTask = null;
 
-      // Adjust scroll position to maintain horizontal center and vertical position
-      const newCanvasWidth = viewport.width;
-      const newCanvasHeight = viewport.height;
+      // Maintain top-center anchor: horizontal center, vertical top
+      const widthRatio = viewport.width / prevWidth;
+      const heightRatio = viewport.height / prevHeight;
 
-      // Calculate the ratio of size change
-      const scaleRatioX = newCanvasWidth / oldCanvasWidth;
-      const scaleRatioY = newCanvasHeight / oldCanvasHeight;
+      canvasWrap.scrollLeft =
+        prevCenterX * widthRatio - canvasWrap.offsetWidth / 2;
+      canvasWrap.scrollTop = prevScrollTop * heightRatio;
 
-      // Maintain horizontal center point, but keep vertical scroll proportional to top
-      const newScrollLeft =
-        oldViewportCenterX * scaleRatioX - canvasWrap.offsetWidth / 2;
-      const newScrollTop = oldScrollTop * scaleRatioY;
-
-      canvasWrap.scrollLeft = newScrollLeft;
-      canvasWrap.scrollTop = newScrollTop;
-
-      // Highlight links after rendering
       highlightLinks(page, viewport);
     })
     .catch((err) => {
@@ -29122,7 +29116,7 @@ document.addEventListener("keydown", function (e) {
     e.target.tagName === "INPUT" ||
     e.target.tagName === "TEXTAREA" ||
     document.getElementById("links-dialog").getAttribute("aria-hidden") ===
-      "false"
+    "false"
   ) {
     return;
   }
