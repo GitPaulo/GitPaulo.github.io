@@ -1129,8 +1129,11 @@ a {
 
   #controls {
     inset-block-start: 15px;
+    left: 50%;
+    transform: translateX(-50%);
     gap: 6px;
     max-inline-size: 90vw;
+    flex-wrap: nowrap;
   }
 
   /* Make canvas responsive on mobile */
