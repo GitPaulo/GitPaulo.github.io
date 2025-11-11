@@ -749,7 +749,7 @@ h1 {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: rgba(255, 255, 255, 0.98);
+  background: #ffffff;
   padding: 2em 2.5em;
   border-radius: var(--radius-lg);
   box-shadow: var(--elev-lg);
