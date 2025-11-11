@@ -28927,7 +28927,7 @@ function center() {
         0,
         (document.getElementById("resume-canvas").offsetWidth -
           canvasWrap.offsetWidth) /
-          2
+        2
       );
       checkCenteredState();
     }, 50);
@@ -28965,7 +28965,7 @@ function renderDocument(page, scale) {
   const prevScrollTop = canvasWrap.scrollTop;
   const prevCenterX = prevScrollLeft + canvasWrap.offsetWidth / 2;
 
-  const resolution = 1.4;
+  const resolution = 1.6;
   canvas.height = resolution * viewport.height;
   canvas.width = resolution * viewport.width;
   canvas.style.height = `${viewport.height}px`;
@@ -29258,7 +29258,7 @@ document.addEventListener("keydown", function (e) {
     e.target.tagName === "INPUT" ||
     e.target.tagName === "TEXTAREA" ||
     document.getElementById("links-dialog").getAttribute("aria-hidden") ===
-      "false"
+    "false"
   ) {
     return;
   }
