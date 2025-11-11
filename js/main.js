@@ -104,24 +104,23 @@ function setupUI() {
 
   if (isMobile()) {
     toggleAttention(true);
-    notify("Hi, use the zoom buttons.", () => toggleAttention(false));
+    notify("Hi 📱, please use the controls above.", () => toggleAttention(false));
   }
 }
 
 function setupInput() {
-  document.addEventListener("DOMContentLoaded", () => {
-    dialogEl = byId("links-dialog");
-    if (dialogEl) {
-      dialog = new A11yDialog(dialogEl);
-      const linksBtn = byId("b4");
-      dialog.on("show", () => linksBtn && linksBtn.classList.add("active"));
-      dialog.on("hide", () => linksBtn && linksBtn.classList.remove("active"));
-      dialog.on("show", populateLinksList);
-    }
+  // Initialize dialog - DOM is already loaded when this is called
+  dialogEl = byId("links-dialog");
+  if (dialogEl) {
+    dialog = new A11yDialog(dialogEl);
+    const linksBtn = byId("b4");
+    dialog.on("show", () => linksBtn && linksBtn.classList.add("active"));
+    dialog.on("hide", () => linksBtn && linksBtn.classList.remove("active"));
+    dialog.on("show", populateLinksList);
+  }
 
-    setupDragScroll();
-    setupCanvasKeyboardNav();
-  });
+  setupDragScroll();
+  setupCanvasKeyboardNav();
 
   document.addEventListener("keydown", (e) => {
     const target = e.target;
@@ -191,7 +190,9 @@ function fit() {
     const scaleY = h / viewport1.height;
     const fitScale = Math.min(scaleX, scaleY);
 
-    scale = Math.max(0.5, Math.min(2.0, fitScale));
+    // Allow smaller scales on mobile, cap at 2.0 for desktop
+    const minScale = isMobile() ? 0.1 : 0.5;
+    scale = Math.max(minScale, Math.min(2.0, fitScale));
     fittedScale = scale;
 
     renderDocument(page, scale).then(() => {
@@ -305,6 +306,15 @@ function zoomOut(delta) {
     const msg = byId("too-small-message");
     if (msg) msg.style.display = "block";
     return;
+  }
+
+  if (
+    isMobile() &&
+    !landscapeNotificationShown &&
+    window.innerWidth < window.innerHeight
+  ) {
+    landscapeNotificationShown = true;
+    notify("Better viewed in landscape.");
   }
 
   scale = Math.max(TOO_SMALL_SCALE, scale - delta);

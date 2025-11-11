@@ -702,7 +702,7 @@ h1 {
 /* Scrollable layout for zoomed view - with padding */
 #canvas-wrap:not(.centered) {
   text-align: center;
-  padding: 2rem;
+  padding: 4rem;
 }
 
 #canvas-wrap:focus {
@@ -803,7 +803,7 @@ h1 {
   z-index: 10;
 }
 
-.dialog-container:not([aria-hidden="true"]) ~ #canvas-wrap .pdf-link-highlight {
+.dialog-container:not([aria-hidden="true"])~#canvas-wrap .pdf-link-highlight {
   pointer-events: none;
   background: rgba(128, 128, 128, 0.15);
   border-color: rgba(128, 128, 128, 0.3);
@@ -884,6 +884,7 @@ h1 {
 }
 
 @keyframes flicker {
+
   0%,
   100% {
     outline: 2px solid transparent;
@@ -1111,7 +1112,7 @@ a {
   height: 30px;
 }
 
-.copy-btn > * {
+.copy-btn>* {
   filter: grayscale(1);
   line-height: 1;
   display: flex;
@@ -1194,7 +1195,7 @@ a {
 /* Responsive */
 @media only screen and (max-width: 750px) {
   #canvas-wrap:not(.centered) {
-    padding: 1rem;
+    padding: 2rem;
   }
 
   .github-icon {
@@ -1250,7 +1251,7 @@ a {
   }
 
   /* Make canvas responsive on mobile */
-  #resume_canvas {
+  #resume-canvas {
     max-inline-size: 100%;
     block-size: auto !important;
     inline-size: auto !important;
@@ -1265,6 +1266,7 @@ a {
 
 /* Respect reduced motion preference */
 @media (prefers-reduced-motion: reduce) {
+
   *,
   *::before,
   *::after {
@@ -1285,6 +1287,7 @@ a {
 
 /* High contrast mode support */
 @media (prefers-contrast: high) {
+
   .zoom_btn,
   .github-icon {
     border: 2px solid currentColor;
@@ -28881,24 +28884,23 @@ function setupUI() {
 
   if (is_mobile__WEBPACK_IMPORTED_MODULE_3__()) {
     toggleAttention(true);
-    notify("Hi, use the zoom buttons.", () => toggleAttention(false));
+    notify("Hi 📱, please use the controls above.", () => toggleAttention(false));
   }
 }
 
 function setupInput() {
-  document.addEventListener("DOMContentLoaded", () => {
-    dialogEl = byId("links-dialog");
-    if (dialogEl) {
-      dialog = new a11y_dialog__WEBPACK_IMPORTED_MODULE_2__["default"](dialogEl);
-      const linksBtn = byId("b4");
-      dialog.on("show", () => linksBtn && linksBtn.classList.add("active"));
-      dialog.on("hide", () => linksBtn && linksBtn.classList.remove("active"));
-      dialog.on("show", populateLinksList);
-    }
+  // Initialize dialog - DOM is already loaded when this is called
+  dialogEl = byId("links-dialog");
+  if (dialogEl) {
+    dialog = new a11y_dialog__WEBPACK_IMPORTED_MODULE_2__["default"](dialogEl);
+    const linksBtn = byId("b4");
+    dialog.on("show", () => linksBtn && linksBtn.classList.add("active"));
+    dialog.on("hide", () => linksBtn && linksBtn.classList.remove("active"));
+    dialog.on("show", populateLinksList);
+  }
 
-    setupDragScroll();
-    setupCanvasKeyboardNav();
-  });
+  setupDragScroll();
+  setupCanvasKeyboardNav();
 
   document.addEventListener("keydown", (e) => {
     const target = e.target;
@@ -28968,7 +28970,9 @@ function fit() {
     const scaleY = h / viewport1.height;
     const fitScale = Math.min(scaleX, scaleY);
 
-    scale = Math.max(0.5, Math.min(2.0, fitScale));
+    // Allow smaller scales on mobile, cap at 2.0 for desktop
+    const minScale = is_mobile__WEBPACK_IMPORTED_MODULE_3__() ? 0.1 : 0.5;
+    scale = Math.max(minScale, Math.min(2.0, fitScale));
     fittedScale = scale;
 
     renderDocument(page, scale).then(() => {
@@ -29082,6 +29086,15 @@ function zoomOut(delta) {
     const msg = byId("too-small-message");
     if (msg) msg.style.display = "block";
     return;
+  }
+
+  if (
+    is_mobile__WEBPACK_IMPORTED_MODULE_3__() &&
+    !landscapeNotificationShown &&
+    window.innerWidth < window.innerHeight
+  ) {
+    landscapeNotificationShown = true;
+    notify("Better viewed in landscape.");
   }
 
   scale = Math.max(TOO_SMALL_SCALE, scale - delta);

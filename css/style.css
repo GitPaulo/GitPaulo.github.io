@@ -131,7 +131,7 @@ h1 {
 /* Scrollable layout for zoomed view - with padding */
 #canvas-wrap:not(.centered) {
   text-align: center;
-  padding: 2rem;
+  padding: 4rem;
 }
 
 #canvas-wrap:focus {
@@ -232,7 +232,7 @@ h1 {
   z-index: 10;
 }
 
-.dialog-container:not([aria-hidden="true"]) ~ #canvas-wrap .pdf-link-highlight {
+.dialog-container:not([aria-hidden="true"])~#canvas-wrap .pdf-link-highlight {
   pointer-events: none;
   background: rgba(128, 128, 128, 0.15);
   border-color: rgba(128, 128, 128, 0.3);
@@ -313,6 +313,7 @@ h1 {
 }
 
 @keyframes flicker {
+
   0%,
   100% {
     outline: 2px solid transparent;
@@ -540,7 +541,7 @@ a {
   height: 30px;
 }
 
-.copy-btn > * {
+.copy-btn>* {
   filter: grayscale(1);
   line-height: 1;
   display: flex;
@@ -623,7 +624,7 @@ a {
 /* Responsive */
 @media only screen and (max-width: 750px) {
   #canvas-wrap:not(.centered) {
-    padding: 1rem;
+    padding: 2rem;
   }
 
   .github-icon {
@@ -679,7 +680,7 @@ a {
   }
 
   /* Make canvas responsive on mobile */
-  #resume_canvas {
+  #resume-canvas {
     max-inline-size: 100%;
     block-size: auto !important;
     inline-size: auto !important;
@@ -694,6 +695,7 @@ a {
 
 /* Respect reduced motion preference */
 @media (prefers-reduced-motion: reduce) {
+
   *,
   *::before,
   *::after {
@@ -714,6 +716,7 @@ a {
 
 /* High contrast mode support */
 @media (prefers-contrast: high) {
+
   .zoom_btn,
   .github-icon {
     border: 2px solid currentColor;
