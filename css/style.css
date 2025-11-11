@@ -116,9 +116,22 @@ h1 {
   height: 100%;
   cursor: grab;
   overflow: auto;
-  padding: 4%;
-  text-align: center;
+  box-sizing: border-box;
   -webkit-overflow-scrolling: touch;
+}
+
+/* Centered layout for fitted view - no padding */
+#canvas-wrap.centered {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+/* Scrollable layout for zoomed view - with padding */
+#canvas-wrap:not(.centered) {
+  text-align: center;
+  padding: 2rem;
 }
 
 #canvas-wrap:focus {
@@ -127,10 +140,8 @@ h1 {
 
 #pdf-container {
   position: relative;
-  display: inline-block;
   opacity: 0;
   transition: opacity 0.3s ease-in-out;
-  text-align: left;
 }
 
 #pdf-container.loaded {
@@ -208,6 +219,8 @@ h1 {
 
 #resume-canvas {
   border: 1px solid #000;
+  max-width: 100%;
+  height: auto;
 }
 
 /* PDF Link Highlights */
@@ -550,6 +563,10 @@ a {
   opacity: 1;
 }
 
+#links-dialog-title {
+  margin-top: 0px;
+}
+
 /*
   Github Icon Button
 */
@@ -605,6 +622,10 @@ a {
 
 /* Responsive */
 @media only screen and (max-width: 750px) {
+  #canvas-wrap:not(.centered) {
+    padding: 1rem;
+  }
+
   .github-icon {
     inline-size: 40px;
     block-size: 40px;
@@ -666,8 +687,8 @@ a {
 }
 
 @media only screen and (max-width: 500px) {
-  #canvas_wrap {
-    overflow: auto;
+  #canvas-wrap:not(.centered) {
+    padding: 0.5rem;
   }
 }
 
