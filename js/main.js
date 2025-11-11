@@ -23,7 +23,6 @@ let scale = 1;
 let fittedScale = null;
 let isFitted = false;
 let currentRenderTask = null;
-let landscapeNotificationShown = false;
 
 // Dialog state
 let dialog = null;
@@ -212,19 +211,13 @@ const fit = () => {
 };
 
 const zoomIn = (delta) => {
+  // Disable zoom in mobile portrait mode only
+  if (isMobile() && window.innerHeight > window.innerWidth) return;
+
   if (scale >= TOO_LARGE_SCALE) {
     const msg = byId("too-large-message");
     if (msg) msg.style.display = "block";
     return;
-  }
-
-  if (
-    isMobile() &&
-    !landscapeNotificationShown &&
-    window.innerWidth < window.innerHeight
-  ) {
-    landscapeNotificationShown = true;
-    notify("Better viewed in landscape.");
   }
 
   hideLinkHighlights();
@@ -262,6 +255,13 @@ const updateZoomButtonsAllowed = () => {
   const zoomOutBtn = byId("b5");
   if (!wrap || !zoomInBtn || !zoomOutBtn || !pdf) return;
 
+  // Disable zoom buttons in mobile portrait mode only
+  if (isMobile() && window.innerHeight > window.innerWidth) {
+    zoomInBtn.disabled = true;
+    zoomOutBtn.disabled = true;
+    return;
+  }
+
   // zoom out state
   if (scale <= TOO_SMALL_SCALE) {
     zoomOutBtn.disabled = true;
@@ -290,19 +290,13 @@ const updateZoomButtonsAllowed = () => {
 };
 
 const zoomOut = (delta) => {
+  // Disable zoom in mobile portrait mode only
+  if (isMobile() && window.innerHeight > window.innerWidth) return;
+
   if (scale <= TOO_SMALL_SCALE) {
     const msg = byId("too-small-message");
     if (msg) msg.style.display = "block";
     return;
-  }
-
-  if (
-    isMobile() &&
-    !landscapeNotificationShown &&
-    window.innerWidth < window.innerHeight
-  ) {
-    landscapeNotificationShown = true;
-    notify("Better viewed in landscape.");
   }
 
   hideLinkHighlights();

@@ -615,6 +615,8 @@ body {
   background: var(--color-bg);
   font-family: var(--font-base);
   margin: 0;
+  overscroll-behavior: none;
+  touch-action: pan-x pan-y pinch-zoom;
 }
 
 p {
@@ -689,6 +691,8 @@ h1 {
   overflow: auto;
   box-sizing: border-box;
   -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  touch-action: pan-x pan-y;
 }
 
 /* Centered layout for fitted view - no padding */
@@ -803,7 +807,7 @@ h1 {
   z-index: 10;
 }
 
-.dialog-container:not([aria-hidden="true"]) ~ #canvas-wrap .pdf-link-highlight {
+.dialog-container:not([aria-hidden="true"])~#canvas-wrap .pdf-link-highlight {
   pointer-events: none;
   background: rgba(128, 128, 128, 0.15);
   border-color: rgba(128, 128, 128, 0.3);
@@ -899,6 +903,7 @@ h1 {
 }
 
 @keyframes flicker {
+
   0%,
   100% {
     outline: 2px solid transparent;
@@ -1126,7 +1131,7 @@ a {
   height: 30px;
 }
 
-.copy-btn > * {
+.copy-btn>* {
   filter: grayscale(1);
   line-height: 1;
   display: flex;
@@ -1278,8 +1283,18 @@ a {
   }
 }
 
+/* Hide zoom buttons in mobile portrait mode only */
+@media only screen and (max-width: 750px) and (orientation: portrait) {
+
+  #b1,
+  #b5 {
+    display: none;
+  }
+}
+
 /* Respect reduced motion preference */
 @media (prefers-reduced-motion: reduce) {
+
   *,
   *::before,
   *::after {
@@ -1300,6 +1315,7 @@ a {
 
 /* High contrast mode support */
 @media (prefers-contrast: high) {
+
   .zoom_btn,
   .github-icon {
     border: 2px solid currentColor;
@@ -28815,7 +28831,6 @@ let scale = 1;
 let fittedScale = null;
 let isFitted = false;
 let currentRenderTask = null;
-let landscapeNotificationShown = false;
 
 // Dialog state
 let dialog = null;
@@ -29004,19 +29019,13 @@ const fit = () => {
 };
 
 const zoomIn = (delta) => {
+  // Disable zoom in mobile portrait mode only
+  if (is_mobile__WEBPACK_IMPORTED_MODULE_3__() && window.innerHeight > window.innerWidth) return;
+
   if (scale >= TOO_LARGE_SCALE) {
     const msg = byId("too-large-message");
     if (msg) msg.style.display = "block";
     return;
-  }
-
-  if (
-    is_mobile__WEBPACK_IMPORTED_MODULE_3__() &&
-    !landscapeNotificationShown &&
-    window.innerWidth < window.innerHeight
-  ) {
-    landscapeNotificationShown = true;
-    notify("Better viewed in landscape.");
   }
 
   hideLinkHighlights();
@@ -29054,6 +29063,13 @@ const updateZoomButtonsAllowed = () => {
   const zoomOutBtn = byId("b5");
   if (!wrap || !zoomInBtn || !zoomOutBtn || !pdf) return;
 
+  // Disable zoom buttons in mobile portrait mode only
+  if (is_mobile__WEBPACK_IMPORTED_MODULE_3__() && window.innerHeight > window.innerWidth) {
+    zoomInBtn.disabled = true;
+    zoomOutBtn.disabled = true;
+    return;
+  }
+
   // zoom out state
   if (scale <= TOO_SMALL_SCALE) {
     zoomOutBtn.disabled = true;
@@ -29082,19 +29098,13 @@ const updateZoomButtonsAllowed = () => {
 };
 
 const zoomOut = (delta) => {
+  // Disable zoom in mobile portrait mode only
+  if (is_mobile__WEBPACK_IMPORTED_MODULE_3__() && window.innerHeight > window.innerWidth) return;
+
   if (scale <= TOO_SMALL_SCALE) {
     const msg = byId("too-small-message");
     if (msg) msg.style.display = "block";
     return;
-  }
-
-  if (
-    is_mobile__WEBPACK_IMPORTED_MODULE_3__() &&
-    !landscapeNotificationShown &&
-    window.innerWidth < window.innerHeight
-  ) {
-    landscapeNotificationShown = true;
-    notify("Better viewed in landscape.");
   }
 
   hideLinkHighlights();
