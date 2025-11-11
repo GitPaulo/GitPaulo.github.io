@@ -803,7 +803,7 @@ h1 {
   z-index: 10;
 }
 
-.dialog-container:not([aria-hidden="true"])~#canvas-wrap .pdf-link-highlight {
+.dialog-container:not([aria-hidden="true"]) ~ #canvas-wrap .pdf-link-highlight {
   pointer-events: none;
   background: rgba(128, 128, 128, 0.15);
   border-color: rgba(128, 128, 128, 0.3);
@@ -864,6 +864,21 @@ h1 {
   box-shadow: var(--elev-sm);
 }
 
+.zoom-btn:disabled {
+  background: rgba(200, 200, 200, 0.5);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+  opacity: 0.6;
+  color: rgba(0, 0, 0, 0.4);
+}
+
+.zoom-btn:disabled:hover {
+  transform: none;
+  box-shadow: none;
+  background: rgba(200, 200, 200, 0.5);
+}
+
 .zoom-btn.active {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
@@ -884,7 +899,6 @@ h1 {
 }
 
 @keyframes flicker {
-
   0%,
   100% {
     outline: 2px solid transparent;
@@ -1112,7 +1126,7 @@ a {
   height: 30px;
 }
 
-.copy-btn>* {
+.copy-btn > * {
   filter: grayscale(1);
   line-height: 1;
   display: flex;
@@ -1127,8 +1141,8 @@ a {
 
 .copy-btn:focus,
 .copy-btn:focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-offset);
 }
 
 .copy-btn.copied {
@@ -1266,7 +1280,6 @@ a {
 
 /* Respect reduced motion preference */
 @media (prefers-reduced-motion: reduce) {
-
   *,
   *::before,
   *::after {
@@ -1287,7 +1300,6 @@ a {
 
 /* High contrast mode support */
 @media (prefers-contrast: high) {
-
   .zoom_btn,
   .github-icon {
     border: 2px solid currentColor;
@@ -28811,7 +28823,7 @@ let dialogEl = null;
 
 const byId = (id) => document.getElementById(id);
 
-function notify(text, cb) {
+const notify = (text, cb) => {
   toastify_js__WEBPACK_IMPORTED_MODULE_4__({
     text,
     duration: 3000,
@@ -28821,43 +28833,41 @@ function notify(text, cb) {
     stopOnFocus: true,
     callback: cb,
   }).showToast();
-}
+};
 
-function debounce(fn, ms) {
+const debounce = (fn, ms) => {
   let t = null;
   return (...args) => {
     if (t) clearTimeout(t);
     t = setTimeout(() => fn(...args), ms);
   };
-}
+};
 
 // Bootstrap
 document.body.classList.add("loaded");
-loadingTask.promise
-  .then((_pdf) => {
-    pdf = _pdf;
-    return getPage1();
-  })
-  .then(() => {
+(async () => {
+  try {
+    pdf = await loadingTask.promise;
+    await getPage1();
     fit();
     setupUI();
     setupInput();
-  })
-  .catch((err) => {
+  } catch (err) {
     console.error("Error loading PDF:", err);
     const spinner = byId("loading-spinner");
     if (spinner) {
       spinner.innerHTML =
         '<p style="color: var(--color-accent);">Failed to load resume. Please refresh the page.</p>';
     }
-  });
+  }
+})();
 
-function getPage1() {
+const getPage1 = () => {
   if (!pdf) throw new Error("PDF not ready");
   return pdf.getPage(1);
-}
+};
 
-function showUI() {
+const showUI = () => {
   const pdfContainer = byId("pdf-container");
   const loadingSpinner = byId("loading-spinner");
   const buttonArea = byId("button-area");
@@ -28872,24 +28882,22 @@ function showUI() {
   if (buttonArea) buttonArea.classList.add("visible");
   if (controls) controls.classList.add("visible");
   if (canvasWrap) canvasWrap.addEventListener("scroll", checkFittedState);
-}
+};
 
-function setupUI() {
+const setupUI = () => {
   setTimeout(showUI, 100);
-
-  window.addEventListener(
-    "resize",
-    debounce(() => fit(), 100)
-  );
+  window.addEventListener("resize", debounce(fit, 100));
 
   if (is_mobile__WEBPACK_IMPORTED_MODULE_3__()) {
     toggleAttention(true);
-    notify("Hi 📱, please use the controls above.", () => toggleAttention(false));
+    notify("Hi 📱, please use the controls above.", () =>
+      toggleAttention(false)
+    );
   }
-}
+};
 
-function setupInput() {
-  // Initialize dialog - DOM is already loaded when this is called
+const setupInput = () => {
+  // Dialog
   dialogEl = byId("links-dialog");
   if (dialogEl) {
     dialog = new a11y_dialog__WEBPACK_IMPORTED_MODULE_2__["default"](dialogEl);
@@ -28903,9 +28911,8 @@ function setupInput() {
   setupCanvasKeyboardNav();
 
   document.addEventListener("keydown", (e) => {
-    const target = e.target;
-    const inField =
-      target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA");
+    const t = e.target;
+    const inField = t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA");
     const linksOpen =
       byId("links-dialog")?.getAttribute("aria-hidden") === "false";
     if (inField || linksOpen) return;
@@ -28943,20 +28950,32 @@ function setupInput() {
   });
 
   const mq = window.matchMedia("(max-width: 750px)");
-  mq.addEventListener("change", () => fit());
-}
+  mq.addEventListener("change", fit);
+};
 
-function toggleAttention(enable) {
-  const buttons = document.getElementsByClassName("zoom-btn");
-  for (const el of buttons) {
+const toggleAttention = (enable) => {
+  for (const el of document.getElementsByClassName("zoom-btn")) {
     el.classList.toggle("attention", !!enable);
   }
-}
+};
 
-function fit() {
+const hideLinkHighlights = () => {
+  document.querySelectorAll(".pdf-link-highlight").forEach((el) => {
+    el.style.opacity = "0";
+  });
+};
+
+const showLinkHighlights = () => {
+  document.querySelectorAll(".pdf-link-highlight").forEach((el) => {
+    el.style.opacity = "1";
+  });
+};
+
+const fit = () => {
   const canvasWrap = byId("canvas-wrap");
   if (!canvasWrap || !pdf) return;
 
+  hideLinkHighlights();
   canvasWrap.classList.add("centered");
   canvasWrap.style.removeProperty("overflow");
 
@@ -28970,7 +28989,6 @@ function fit() {
     const scaleY = h / viewport1.height;
     const fitScale = Math.min(scaleX, scaleY);
 
-    // Allow smaller scales on mobile, cap at 2.0 for desktop
     const minScale = is_mobile__WEBPACK_IMPORTED_MODULE_3__() ? 0.1 : 0.5;
     scale = Math.max(minScale, Math.min(2.0, fitScale));
     fittedScale = scale;
@@ -28983,9 +29001,9 @@ function fit() {
       updateZoomButtonsAllowed();
     });
   });
-}
+};
 
-function zoomIn(delta) {
+const zoomIn = (delta) => {
   if (scale >= TOO_LARGE_SCALE) {
     const msg = byId("too-large-message");
     if (msg) msg.style.display = "block";
@@ -29001,13 +29019,14 @@ function zoomIn(delta) {
     notify("Better viewed in landscape.");
   }
 
+  hideLinkHighlights();
+
   const wrap = byId("canvas-wrap");
   if (wrap && ((is_mobile__WEBPACK_IMPORTED_MODULE_3__() && scale > MOBILE_SCALE) || scale > BROWSER_SCALE)) {
     wrap.style.overflow = "auto";
   }
 
   scale = Math.min(TOO_LARGE_SCALE, scale + delta);
-
   if (wrap) wrap.classList.remove("centered");
 
   requestAnimationFrame(() => {
@@ -29019,69 +29038,50 @@ function zoomIn(delta) {
       });
     });
   });
-}
+};
 
-function updateScaleMessages() {
+const updateScaleMessages = () => {
   const small = byId("too-small-message");
   const large = byId("too-large-message");
 
-  if (small) {
-    small.style.display = scale <= TOO_SMALL_SCALE ? "block" : "none";
-  }
-  if (large) {
-    large.style.display = scale >= TOO_LARGE_SCALE ? "block" : "none";
-  }
-}
+  if (small) small.style.display = scale <= TOO_SMALL_SCALE ? "block" : "none";
+  if (large) large.style.display = scale >= TOO_LARGE_SCALE ? "block" : "none";
+};
 
-function updateZoomButtonsAllowed() {
+const updateZoomButtonsAllowed = () => {
   const wrap = byId("canvas-wrap");
   const zoomInBtn = byId("b1");
   const zoomOutBtn = byId("b5");
-
   if (!wrap || !zoomInBtn || !zoomOutBtn || !pdf) return;
 
-  // Disable zoom out if at minimum scale
+  // zoom out state
   if (scale <= TOO_SMALL_SCALE) {
     zoomOutBtn.disabled = true;
-    zoomOutBtn.style.opacity = "0.5";
-    zoomOutBtn.style.cursor = "not-allowed";
   } else {
     zoomOutBtn.disabled = false;
-    zoomOutBtn.style.removeProperty("opacity");
-    zoomOutBtn.style.removeProperty("cursor");
   }
 
-  // Disable zoom in if at maximum scale or would exceed viewport
   if (scale >= TOO_LARGE_SCALE) {
     zoomInBtn.disabled = true;
-    zoomInBtn.style.opacity = "0.5";
-    zoomInBtn.style.cursor = "not-allowed";
     return;
   }
 
-  // Check if next zoom would exceed viewport width
+  // predictive check for next zoom step
   getPage1().then((page) => {
     const viewport = page.getViewport({ scale: 1.0 });
-    const nextScale = scale + 0.25; // Default zoom delta
+    const nextScale = scale + 0.25;
     const nextWidth = viewport.width * nextScale;
-
-    // Account for padding when not centered
-    const isCentered = wrap.classList.contains("centered");
-    const availableWidth = isCentered ? wrap.clientWidth : wrap.clientWidth;
+    const availableWidth = wrap.clientWidth;
 
     if (nextWidth >= availableWidth) {
       zoomInBtn.disabled = true;
-      zoomInBtn.style.opacity = "0.5";
-      zoomInBtn.style.cursor = "not-allowed";
     } else {
       zoomInBtn.disabled = false;
-      zoomInBtn.style.removeProperty("opacity");
-      zoomInBtn.style.removeProperty("cursor");
     }
   });
-}
+};
 
-function zoomOut(delta) {
+const zoomOut = (delta) => {
   if (scale <= TOO_SMALL_SCALE) {
     const msg = byId("too-small-message");
     if (msg) msg.style.display = "block";
@@ -29097,6 +29097,7 @@ function zoomOut(delta) {
     notify("Better viewed in landscape.");
   }
 
+  hideLinkHighlights();
   scale = Math.max(TOO_SMALL_SCALE, scale - delta);
 
   const wrap = byId("canvas-wrap");
@@ -29111,9 +29112,9 @@ function zoomOut(delta) {
       });
     });
   });
-}
+};
 
-function checkFittedState() {
+const checkFittedState = () => {
   const wrap = byId("canvas-wrap");
   const fitBtn = byId("b3");
   if (!wrap || !fitBtn || fittedScale == null) return;
@@ -29127,21 +29128,22 @@ function checkFittedState() {
     fitBtn.classList.toggle("visible", !isFitted);
     fitBtn.classList.toggle("hidden", isFitted);
   }
-}
+};
 
 // Make the canvas' parent the positioning context for overlays.
-// Do NOT set width/height here; that breaks centering.
-function ensureOverlayParent() {
+const ensureOverlayParent = () => {
   const canvas = byId("resume-canvas");
   if (!canvas) return null;
+
   const parent = canvas.parentElement;
   if (!parent) return null;
+
   const cs = getComputedStyle(parent);
   if (cs.position === "static") parent.style.position = "relative";
   return parent;
-}
+};
 
-function renderDocument(page, scaleValue) {
+const renderDocument = (page, scaleValue) => {
   if (currentRenderTask) {
     currentRenderTask.cancel();
     currentRenderTask = null;
@@ -29182,11 +29184,8 @@ function renderDocument(page, scaleValue) {
       wrap.scrollLeft = prevCenterX * widthRatio - wrap.offsetWidth / 2;
       wrap.scrollTop = prevScrollTop * heightRatio;
 
-      // Wait for layout to settle before calculating link positions
       requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          highlightLinks(page, viewport);
-        });
+        highlightLinks(page, viewport);
       });
     })
     .catch((err) => {
@@ -29195,17 +29194,15 @@ function renderDocument(page, scaleValue) {
       }
       currentRenderTask = null;
     });
-}
+};
 
-function highlightLinks(page, viewport) {
+const highlightLinks = (page, viewport) => {
   document.querySelectorAll(".pdf-link-highlight").forEach((el) => el.remove());
 
   const canvas = byId("resume-canvas");
   const parent = ensureOverlayParent();
   if (!canvas || !parent) return;
 
-  // Offsets from canvas to its parent, in CSS pixels.
-  // Using getBoundingClientRect() handles transforms and flex centering.
   const parentRect = parent.getBoundingClientRect();
   const canvasRect = canvas.getBoundingClientRect();
   const offsetLeft = canvasRect.left - parentRect.left;
@@ -29228,34 +29225,34 @@ function highlightLinks(page, viewport) {
       link.className = "pdf-link-highlight";
       link.setAttribute("aria-label", `Link to ${a.url}`);
 
-      // Absolute to the canvas' parent, offset to the canvas' top-left.
       link.style.position = "absolute";
       link.style.left = `${offsetLeft + left}px`;
       link.style.top = `${offsetTop + top}px`;
       link.style.width = `${width}px`;
       link.style.height = `${height}px`;
-      // Optional: keep above canvas
       link.style.zIndex = "1";
+      link.style.transition = "opacity 0.2s ease";
+      link.style.opacity = "1";
 
       parent.appendChild(link);
     }
   });
-}
+};
 
-function populateLinksList() {
+const populateLinksList = () => {
   if (!pdf) return;
-  getPage1().then((page) =>
-    page.getAnnotations().then((annotations) => {
+
+  getPage1()
+    .then((page) => page.getAnnotations())
+    .then((annotations) => {
       const linksAreaEl = byId("links-area");
       const linksCountEl = byId("links-count");
       if (!linksAreaEl || !linksCountEl) return;
 
       linksAreaEl.innerHTML = "";
-      const unique = new Set();
-
-      for (const a of annotations) {
-        if (a.url) unique.add(a.url);
-      }
+      const unique = new Set(
+        annotations.filter((a) => a.url).map((a) => a.url)
+      );
 
       const count = unique.size;
       linksCountEl.textContent = String(count);
@@ -29280,20 +29277,20 @@ function populateLinksList() {
         const copyBtn = document.createElement("button");
         copyBtn.type = "button";
         copyBtn.className = "copy-btn";
-        copyBtn.innerHTML = "<span>📋</span>";
+        copyBtn.innerHTML = '<i class="fa-regular fa-copy"></i>';
         copyBtn.setAttribute("aria-label", `Copy ${url}`);
 
         copyBtn.onclick = async () => {
           document.querySelectorAll(".copy-btn").forEach((btn) => {
-            btn.innerHTML = "<span>📋</span>";
+            btn.innerHTML = '<i class="fa-regular fa-copy"></i>';
             btn.classList.remove("copied");
           });
           try {
             await navigator.clipboard.writeText(url);
-            copyBtn.innerHTML = "<span>✓</span>";
+            copyBtn.innerHTML = '<i class="fa-solid fa-check"></i>';
             copyBtn.classList.add("copied");
             setTimeout(() => {
-              copyBtn.innerHTML = "<span>📋</span>";
+              copyBtn.innerHTML = '<i class="fa-regular fa-copy"></i>';
               copyBtn.classList.remove("copied");
             }, 2000);
           } catch (e) {
@@ -29306,10 +29303,10 @@ function populateLinksList() {
         linksAreaEl.appendChild(item);
       });
     })
-  );
-}
+    .then(showLinkHighlights);
+};
 
-function setupDragScroll() {
+const setupDragScroll = () => {
   const wrap = byId("canvas-wrap");
   if (!wrap) return;
 
@@ -29343,9 +29340,9 @@ function setupDragScroll() {
   };
 
   wrap.addEventListener("mousedown", onDown);
-}
+};
 
-function setupCanvasKeyboardNav() {
+const setupCanvasKeyboardNav = () => {
   const wrap = byId("canvas-wrap");
   if (!wrap) return;
 
@@ -29386,21 +29383,21 @@ function setupCanvasKeyboardNav() {
         break;
     }
   });
-}
+};
 
-function openLinks() {
+const openLinks = () => {
   if (!dialogEl || !dialog) return;
   const open = dialogEl.getAttribute("aria-hidden") === "false";
   open ? dialog.hide() : dialog.show();
-}
+};
 
-function closeLinks() {
+const closeLinks = () => {
   dialog?.hide();
-}
+};
 
-function download() {
+const download = () => {
   window.open(PDF_URL, "_self");
-}
+};
 
 // For webpack or inline handlers
 window.zoomIn = zoomIn;

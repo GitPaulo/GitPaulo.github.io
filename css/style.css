@@ -232,7 +232,7 @@ h1 {
   z-index: 10;
 }
 
-.dialog-container:not([aria-hidden="true"])~#canvas-wrap .pdf-link-highlight {
+.dialog-container:not([aria-hidden="true"]) ~ #canvas-wrap .pdf-link-highlight {
   pointer-events: none;
   background: rgba(128, 128, 128, 0.15);
   border-color: rgba(128, 128, 128, 0.3);
@@ -293,6 +293,21 @@ h1 {
   box-shadow: var(--elev-sm);
 }
 
+.zoom-btn:disabled {
+  background: rgba(200, 200, 200, 0.5);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+  opacity: 0.6;
+  color: rgba(0, 0, 0, 0.4);
+}
+
+.zoom-btn:disabled:hover {
+  transform: none;
+  box-shadow: none;
+  background: rgba(200, 200, 200, 0.5);
+}
+
 .zoom-btn.active {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
@@ -313,7 +328,6 @@ h1 {
 }
 
 @keyframes flicker {
-
   0%,
   100% {
     outline: 2px solid transparent;
@@ -541,7 +555,7 @@ a {
   height: 30px;
 }
 
-.copy-btn>* {
+.copy-btn > * {
   filter: grayscale(1);
   line-height: 1;
   display: flex;
@@ -556,8 +570,8 @@ a {
 
 .copy-btn:focus,
 .copy-btn:focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-offset);
 }
 
 .copy-btn.copied {
@@ -695,7 +709,6 @@ a {
 
 /* Respect reduced motion preference */
 @media (prefers-reduced-motion: reduce) {
-
   *,
   *::before,
   *::after {
@@ -716,7 +729,6 @@ a {
 
 /* High contrast mode support */
 @media (prefers-contrast: high) {
-
   .zoom_btn,
   .github-icon {
     border: 2px solid currentColor;
