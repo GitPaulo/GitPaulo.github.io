@@ -1,6 +1,6 @@
 ## My Resume
 
-View on https://gitpaulo.github.io/
+View on https://resume.gitpaulo.moe/
 
 ## Dev
 
