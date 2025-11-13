@@ -716,11 +716,14 @@ h1 {
 #pdf-container {
   position: relative;
   opacity: 0;
-  transition: opacity 0.3s ease-in-out;
+  visibility: hidden;
+  transition: opacity 0.3s ease-in-out, visibility 0s 0.3s;
 }
 
 #pdf-container.loaded {
   opacity: 1;
+  visibility: visible;
+  transition: opacity 0.3s ease-in-out;
 }
 
 #loading-spinner {
@@ -765,7 +768,7 @@ h1 {
   left: 50%;
   transform: translate(-50%, -50%);
   background: #ffffff;
-  padding: 2em 2.5em;
+  padding: 1em 1.5em;
   border-radius: var(--radius-lg);
   box-shadow: var(--elev-lg);
   z-index: 1001;
@@ -777,7 +780,8 @@ h1 {
 
 #too-small-message p,
 #too-large-message p {
-  margin: 0 0 1em 0;
+  margin: 0;
+  padding: 0;
   color: #000;
   font-size: 18px;
   font-weight: 500;
@@ -28858,125 +28862,17 @@ const debounce = (fn, ms) => {
   };
 };
 
-// Bootstrap
-document.body.classList.add("loaded");
-(async () => {
-  try {
-    pdf = await loadingTask.promise;
-    await getPage1();
-    fit();
-    setupUI();
-    setupInput();
-  } catch (err) {
-    console.error("Error loading PDF:", err);
-    const spinner = byId("loading-spinner");
-    if (spinner) {
-      spinner.innerHTML =
-        '<p style="color: var(--color-accent);">Failed to load resume. Please refresh the page.</p>';
-    }
-  }
-})();
+const isMobilePortrait = () => is_mobile__WEBPACK_IMPORTED_MODULE_3__() && window.innerHeight > window.innerWidth;
+const isLinksDialogOpen = () => dialogEl?.getAttribute("aria-hidden") === "false";
 
-const getPage1 = () => {
+const getPage1 = async () => {
   if (!pdf) throw new Error("PDF not ready");
   return pdf.getPage(1);
 };
 
-const showUI = () => {
-  const pdfContainer = byId("pdf-container");
-  const loadingSpinner = byId("loading-spinner");
-  const buttonArea = byId("button-area");
-  const controls = byId("controls");
-  const canvasWrap = byId("canvas-wrap");
-
-  if (loadingSpinner) {
-    loadingSpinner.classList.add("hidden");
-    setTimeout(() => (loadingSpinner.style.display = "none"), 300);
-  }
-  if (pdfContainer) pdfContainer.classList.add("loaded");
-  if (buttonArea) buttonArea.classList.add("visible");
-  if (controls) controls.classList.add("visible");
-  if (canvasWrap) canvasWrap.addEventListener("scroll", checkFittedState);
-};
-
-const setupUI = () => {
-  setTimeout(showUI, 100);
-  window.addEventListener("resize", debounce(fit, 100));
-
-  if (is_mobile__WEBPACK_IMPORTED_MODULE_3__()) {
-    toggleAttention(true);
-    notify("Hi 📱, please use the controls above.", () =>
-      toggleAttention(false)
-    );
-  }
-};
-
-const setupInput = () => {
-  // Dialog
-  dialogEl = byId("links-dialog");
-  if (dialogEl) {
-    dialog = new a11y_dialog__WEBPACK_IMPORTED_MODULE_2__["default"](dialogEl);
-    const linksBtn = byId("b4");
-    dialog.on("show", () => linksBtn && linksBtn.classList.add("active"));
-    dialog.on("hide", () => linksBtn && linksBtn.classList.remove("active"));
-    dialog.on("show", populateLinksList);
-  }
-
-  setupDragScroll();
-  setupCanvasKeyboardNav();
-
-  document.addEventListener("keydown", (e) => {
-    const t = e.target;
-    const inField = t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA");
-    const linksOpen =
-      byId("links-dialog")?.getAttribute("aria-hidden") === "false";
-    if (inField || linksOpen) return;
-
-    switch (e.key) {
-      case "+":
-      case "=":
-        e.preventDefault();
-        zoomIn(0.25);
-        break;
-      case "-":
-        e.preventDefault();
-        zoomOut(0.25);
-        break;
-      case "0":
-        e.preventDefault();
-        fit();
-        break;
-      case "l":
-      case "L":
-        e.preventDefault();
-        openLinks();
-        break;
-      case "d":
-      case "D":
-        e.preventDefault();
-        download();
-        break;
-      case "Escape":
-        if (byId("links-dialog")?.getAttribute("aria-hidden") === "false") {
-          closeLinks();
-        }
-        break;
-    }
-  });
-
-  const mq = window.matchMedia("(max-width: 750px)");
-  mq.addEventListener("change", fit);
-};
-
-const toggleAttention = (enable) => {
-  for (const el of document.getElementsByClassName("zoom-btn")) {
-    el.classList.toggle("attention", !!enable);
-  }
-};
-
 const hideLinkHighlights = () => {
   document.querySelectorAll(".pdf-link-highlight").forEach((el) => {
-    el.style.opacity = "0";
+    el.remove();
   });
 };
 
@@ -28986,7 +28882,86 @@ const showLinkHighlights = () => {
   });
 };
 
-const fit = () => {
+const updateScaleMessages = () => {
+  const small = byId("too-small-message");
+  const large = byId("too-large-message");
+
+  if (small) small.style.display = scale <= TOO_SMALL_SCALE ? "block" : "none";
+  if (large) large.style.display = scale >= TOO_LARGE_SCALE ? "block" : "none";
+};
+
+const checkFittedState = () => {
+  const wrap = byId("canvas-wrap");
+  const fitBtn = byId("b3");
+
+  if (!wrap || !fitBtn || fittedScale == null) return;
+  if (wrap.scrollTop < 0) return;
+
+  const isAtTop = wrap.scrollTop <= 10;
+  const isAtFittedZoom = Math.abs(scale - fittedScale) < FIT_EPSILON;
+  const isCentered = wrap.classList.contains("centered");
+  const shouldHideFit = isAtTop && isAtFittedZoom && isCentered;
+
+  if (shouldHideFit === isFitted) return;
+
+  isFitted = shouldHideFit;
+  fitBtn.classList.toggle("visible", !isFitted);
+  fitBtn.classList.toggle("hidden", isFitted);
+};
+
+const updateZoomButtonsAllowed = async () => {
+  const wrap = byId("canvas-wrap");
+  const zoomInBtn = byId("b1");
+  const zoomOutBtn = byId("b5");
+  if (!wrap || !zoomInBtn || !zoomOutBtn || !pdf) return;
+
+  if (isMobilePortrait()) {
+    zoomInBtn.disabled = true;
+    zoomOutBtn.disabled = true;
+    return;
+  }
+
+  zoomOutBtn.disabled = scale <= TOO_SMALL_SCALE;
+
+  if (scale >= TOO_LARGE_SCALE) {
+    zoomInBtn.disabled = true;
+    return;
+  }
+
+  try {
+    const page = await getPage1();
+    const viewport = page.getViewport({ scale: 1.0 });
+    const nextScale = scale + 0.25;
+    const nextWidth = viewport.width * nextScale;
+
+    // Account for 4rem padding on each side when not centered
+    const isCentered = wrap.classList.contains("centered");
+    const paddingPx = isCentered ? 0 : parseFloat(getComputedStyle(wrap).fontSize) * 8;
+    const availableWidth = wrap.clientWidth - paddingPx;
+
+    zoomInBtn.disabled = !isCentered && nextWidth >= availableWidth;
+  } catch (err) {
+    console.error("Update zoom buttons error:", err);
+  }
+};
+
+const renderWithCurrentScale = () => {
+  requestAnimationFrame(() => {
+    (async () => {
+      try {
+        const page = await getPage1();
+        await renderDocument(page, scale);
+        updateScaleMessages();
+        checkFittedState();
+        updateZoomButtonsAllowed();
+      } catch (err) {
+        console.error("Render with current scale error:", err);
+      }
+    })();
+  });
+};
+
+const fit = async () => {
   const canvasWrap = byId("canvas-wrap");
   if (!canvasWrap || !pdf) return;
 
@@ -28994,7 +28969,8 @@ const fit = () => {
   canvasWrap.classList.add("centered");
   canvasWrap.style.removeProperty("overflow");
 
-  getPage1().then((page) => {
+  try {
+    const page = await getPage1();
     const viewport1 = page.getViewport({ scale: 1.0 });
 
     const w = canvasWrap.clientWidth * 0.99;
@@ -29008,19 +28984,19 @@ const fit = () => {
     scale = Math.max(minScale, Math.min(2.0, fitScale));
     fittedScale = scale;
 
-    renderDocument(page, scale).then(() => {
-      canvasWrap.scrollTop = 0;
-      canvasWrap.scrollLeft = 0;
-      updateScaleMessages();
-      checkFittedState();
-      updateZoomButtonsAllowed();
-    });
-  });
+    await renderDocument(page, scale);
+    canvasWrap.scrollTop = 0;
+    canvasWrap.scrollLeft = 0;
+    updateScaleMessages();
+    checkFittedState();
+    updateZoomButtonsAllowed();
+  } catch (err) {
+    console.error("Fit error:", err);
+  }
 };
 
-const zoomIn = (delta) => {
-  // Disable zoom in mobile portrait mode only
-  if (is_mobile__WEBPACK_IMPORTED_MODULE_3__() && window.innerHeight > window.innerWidth) return;
+const zoomIn = async (delta) => {
+  if (isMobilePortrait()) return;
 
   if (scale >= TOO_LARGE_SCALE) {
     const msg = byId("too-large-message");
@@ -29028,78 +29004,36 @@ const zoomIn = (delta) => {
     return;
   }
 
+  const wrap = byId("canvas-wrap");
+  if (!wrap || !pdf) return;
+
+  // Check if next scale will fit in viewport (x-axis only)
+  const page = await getPage1();
+  const viewport = page.getViewport({ scale: 1.0 });
+  const nextScale = Math.min(TOO_LARGE_SCALE, scale + delta);
+  const nextWidth = viewport.width * nextScale;
+
+  // Account for 4rem padding on each side when not centered
+  const isCentered = wrap.classList.contains("centered");
+  const paddingPx = isCentered ? 0 : parseFloat(getComputedStyle(wrap).fontSize) * 8;
+  const availableWidth = wrap.clientWidth - paddingPx;
+
+  // Prevent zoom if already scrollable and won't fit
+  if (!isCentered && nextWidth >= availableWidth) return;
+
   hideLinkHighlights();
 
-  const wrap = byId("canvas-wrap");
-  if (wrap && ((is_mobile__WEBPACK_IMPORTED_MODULE_3__() && scale > MOBILE_SCALE) || scale > BROWSER_SCALE)) {
+  if ((is_mobile__WEBPACK_IMPORTED_MODULE_3__() && scale > MOBILE_SCALE) || scale > BROWSER_SCALE) {
     wrap.style.overflow = "auto";
   }
 
-  scale = Math.min(TOO_LARGE_SCALE, scale + delta);
-  if (wrap) wrap.classList.remove("centered");
-
-  requestAnimationFrame(() => {
-    getPage1().then((page) => {
-      renderDocument(page, scale).then(() => {
-        updateScaleMessages();
-        checkFittedState();
-        updateZoomButtonsAllowed();
-      });
-    });
-  });
-};
-
-const updateScaleMessages = () => {
-  const small = byId("too-small-message");
-  const large = byId("too-large-message");
-
-  if (small) small.style.display = scale <= TOO_SMALL_SCALE ? "block" : "none";
-  if (large) large.style.display = scale >= TOO_LARGE_SCALE ? "block" : "none";
-};
-
-const updateZoomButtonsAllowed = () => {
-  const wrap = byId("canvas-wrap");
-  const zoomInBtn = byId("b1");
-  const zoomOutBtn = byId("b5");
-  if (!wrap || !zoomInBtn || !zoomOutBtn || !pdf) return;
-
-  // Disable zoom buttons in mobile portrait mode only
-  if (is_mobile__WEBPACK_IMPORTED_MODULE_3__() && window.innerHeight > window.innerWidth) {
-    zoomInBtn.disabled = true;
-    zoomOutBtn.disabled = true;
-    return;
-  }
-
-  // zoom out state
-  if (scale <= TOO_SMALL_SCALE) {
-    zoomOutBtn.disabled = true;
-  } else {
-    zoomOutBtn.disabled = false;
-  }
-
-  if (scale >= TOO_LARGE_SCALE) {
-    zoomInBtn.disabled = true;
-    return;
-  }
-
-  // predictive check for next zoom step
-  getPage1().then((page) => {
-    const viewport = page.getViewport({ scale: 1.0 });
-    const nextScale = scale + 0.25;
-    const nextWidth = viewport.width * nextScale;
-    const availableWidth = wrap.clientWidth;
-
-    if (nextWidth >= availableWidth) {
-      zoomInBtn.disabled = true;
-    } else {
-      zoomInBtn.disabled = false;
-    }
-  });
+  scale = nextScale;
+  wrap.classList.remove("centered");
+  renderWithCurrentScale();
 };
 
 const zoomOut = (delta) => {
-  // Disable zoom in mobile portrait mode only
-  if (is_mobile__WEBPACK_IMPORTED_MODULE_3__() && window.innerHeight > window.innerWidth) return;
+  if (isMobilePortrait()) return;
 
   if (scale <= TOO_SMALL_SCALE) {
     const msg = byId("too-small-message");
@@ -29113,31 +29047,7 @@ const zoomOut = (delta) => {
   const wrap = byId("canvas-wrap");
   if (wrap) wrap.classList.remove("centered");
 
-  requestAnimationFrame(() => {
-    getPage1().then((page) => {
-      renderDocument(page, scale).then(() => {
-        updateScaleMessages();
-        checkFittedState();
-        updateZoomButtonsAllowed();
-      });
-    });
-  });
-};
-
-const checkFittedState = () => {
-  const wrap = byId("canvas-wrap");
-  const fitBtn = byId("b3");
-  if (!wrap || !fitBtn || fittedScale == null) return;
-
-  const isAtTop = wrap.scrollTop <= 10;
-  const isAtFittedZoom = Math.abs(scale - fittedScale) < FIT_EPSILON;
-  const shouldHideFit = isAtTop && isAtFittedZoom;
-
-  if (shouldHideFit !== isFitted) {
-    isFitted = shouldHideFit;
-    fitBtn.classList.toggle("visible", !isFitted);
-    fitBtn.classList.toggle("hidden", isFitted);
-  }
+  renderWithCurrentScale();
 };
 
 // Make the canvas' parent the positioning context for overlays.
@@ -29153,7 +29063,7 @@ const ensureOverlayParent = () => {
   return parent;
 };
 
-const renderDocument = (page, scaleValue) => {
+const renderDocument = async (page, scaleValue) => {
   if (currentRenderTask) {
     currentRenderTask.cancel();
     currentRenderTask = null;
@@ -29161,7 +29071,7 @@ const renderDocument = (page, scaleValue) => {
 
   const canvas = byId("resume-canvas");
   const wrap = byId("canvas-wrap");
-  if (!canvas || !wrap) return Promise.resolve();
+  if (!canvas || !wrap) return;
 
   const ctx = canvas.getContext("2d");
 
@@ -29184,26 +29094,26 @@ const renderDocument = (page, scaleValue) => {
     transform: [RENDER_RESOLUTION, 0, 0, RENDER_RESOLUTION, 0, 0],
   });
 
-  return currentRenderTask.promise
-    .then(() => {
-      currentRenderTask = null;
+  try {
+    await currentRenderTask.promise;
+  } catch (err) {
+    if (err?.name !== "RenderingCancelledException") {
+      console.error("Rendering error:", err);
+    }
+    return;
+  } finally {
+    currentRenderTask = null;
+  }
 
-      const widthRatio = viewport.width / prevWidth;
-      const heightRatio = viewport.height / prevHeight;
+  const widthRatio = viewport.width / prevWidth;
+  const heightRatio = viewport.height / prevHeight;
 
-      wrap.scrollLeft = prevCenterX * widthRatio - wrap.offsetWidth / 2;
-      wrap.scrollTop = prevScrollTop * heightRatio;
+  wrap.scrollLeft = prevCenterX * widthRatio - wrap.offsetWidth / 2;
+  wrap.scrollTop = prevScrollTop * heightRatio;
 
-      requestAnimationFrame(() => {
-        highlightLinks(page, viewport);
-      });
-    })
-    .catch((err) => {
-      if (err?.name !== "RenderingCancelledException") {
-        console.error("Rendering error:", err);
-      }
-      currentRenderTask = null;
-    });
+  requestAnimationFrame(() => {
+    highlightLinks(page, viewport);
+  });
 };
 
 const highlightLinks = (page, viewport) => {
@@ -29218,102 +29128,137 @@ const highlightLinks = (page, viewport) => {
   const offsetLeft = canvasRect.left - parentRect.left;
   const offsetTop = canvasRect.top - parentRect.top;
 
-  page.getAnnotations().then((annotations) => {
-    for (const a of annotations) {
-      if (a.subtype !== "Link" || !a.url) continue;
+  (async () => {
+    try {
+      const annotations = await page.getAnnotations();
 
-      const [x1, y1, x2, y2] = viewport.convertToViewportRectangle(a.rect);
-      const left = Math.min(x1, x2);
-      const top = Math.min(y1, y2);
-      const width = Math.abs(x2 - x1);
-      const height = Math.abs(y2 - y1);
+      for (const a of annotations) {
+        if (a.subtype !== "Link" || !a.url) continue;
 
-      const link = document.createElement("a");
-      link.href = a.url;
-      link.target = "_blank";
-      link.rel = "noopener noreferrer";
-      link.className = "pdf-link-highlight";
-      link.setAttribute("aria-label", `Link to ${a.url}`);
+        const [x1, y1, x2, y2] = viewport.convertToViewportRectangle(a.rect);
+        const left = Math.min(x1, x2);
+        const top = Math.min(y1, y2);
+        const width = Math.abs(x2 - x1);
+        const height = Math.abs(y2 - y1);
 
-      link.style.position = "absolute";
-      link.style.left = `${offsetLeft + left}px`;
-      link.style.top = `${offsetTop + top}px`;
-      link.style.width = `${width}px`;
-      link.style.height = `${height}px`;
-      link.style.zIndex = "1";
-      link.style.transition = "opacity 0.2s ease";
-      link.style.opacity = "1";
+        const link = document.createElement("a");
+        link.href = a.url;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.className = "pdf-link-highlight";
+        link.setAttribute("aria-label", `Link to ${a.url}`);
 
-      parent.appendChild(link);
+        link.style.position = "absolute";
+        link.style.left = `${offsetLeft + left}px`;
+        link.style.top = `${offsetTop + top}px`;
+        link.style.width = `${width}px`;
+        link.style.height = `${height}px`;
+        link.style.zIndex = "1";
+        link.style.transition = "opacity 0.2s ease";
+        link.style.opacity = "1";
+
+        parent.appendChild(link);
+      }
+    } catch (err) {
+      console.error("Highlight links error:", err);
     }
-  });
+  })();
 };
 
-const populateLinksList = () => {
+const populateLinksList = async () => {
   if (!pdf) return;
 
-  getPage1()
-    .then((page) => page.getAnnotations())
-    .then((annotations) => {
-      const linksAreaEl = byId("links-area");
-      const linksCountEl = byId("links-count");
-      if (!linksAreaEl || !linksCountEl) return;
+  try {
+    const page = await getPage1();
+    const annotations = await page.getAnnotations();
 
-      linksAreaEl.innerHTML = "";
-      const unique = new Set(
-        annotations.filter((a) => a.url).map((a) => a.url)
-      );
+    const linksAreaEl = byId("links-area");
+    const linksCountEl = byId("links-count");
+    if (!linksAreaEl || !linksCountEl) return;
 
-      const count = unique.size;
-      linksCountEl.textContent = String(count);
+    linksAreaEl.innerHTML = "";
+    const unique = new Set(
+      annotations.filter((a) => a.url).map((a) => a.url)
+    );
 
-      if (count === 0) {
-        linksAreaEl.classList.add("empty");
-        linksAreaEl.textContent = "No links found in document.";
-        return;
-      }
-      linksAreaEl.classList.remove("empty");
+    const count = unique.size;
+    linksCountEl.textContent = String(count);
 
-      unique.forEach((url) => {
-        const item = document.createElement("div");
-        item.className = "link-item";
+    if (count === 0) {
+      linksAreaEl.classList.add("empty");
+      linksAreaEl.textContent = "No links found in document.";
+      return;
+    }
 
-        const linkEl = document.createElement("a");
-        linkEl.href = url;
-        linkEl.target = "_blank";
-        linkEl.rel = "noopener noreferrer";
-        linkEl.innerHTML = `<span class="link-icon" aria-hidden="true">↗</span><span>${url}</span>`;
+    linksAreaEl.classList.remove("empty");
 
-        const copyBtn = document.createElement("button");
-        copyBtn.type = "button";
-        copyBtn.className = "copy-btn";
-        copyBtn.innerHTML = '<i class="fa-regular fa-copy"></i>';
-        copyBtn.setAttribute("aria-label", `Copy ${url}`);
+    unique.forEach((url) => {
+      const item = document.createElement("div");
+      item.className = "link-item";
 
-        copyBtn.onclick = async () => {
-          document.querySelectorAll(".copy-btn").forEach((btn) => {
-            btn.innerHTML = '<i class="fa-regular fa-copy"></i>';
-            btn.classList.remove("copied");
-          });
-          try {
-            await navigator.clipboard.writeText(url);
-            copyBtn.innerHTML = '<i class="fa-solid fa-check"></i>';
-            copyBtn.classList.add("copied");
-            setTimeout(() => {
-              copyBtn.innerHTML = '<i class="fa-regular fa-copy"></i>';
-              copyBtn.classList.remove("copied");
-            }, 2000);
-          } catch (e) {
-            console.error("Copy failed:", e);
-          }
-        };
+      const linkEl = document.createElement("a");
+      linkEl.href = url;
+      linkEl.target = "_blank";
+      linkEl.rel = "noopener noreferrer";
+      linkEl.innerHTML = `<span class="link-icon" aria-hidden="true">↗</span><span>${url}</span>`;
 
-        item.appendChild(linkEl);
-        item.appendChild(copyBtn);
-        linksAreaEl.appendChild(item);
-      });
-    })
-    .then(showLinkHighlights);
+      const copyBtn = document.createElement("button");
+      copyBtn.type = "button";
+      copyBtn.className = "copy-btn";
+      copyBtn.innerHTML = '<i class="fa-regular fa-copy"></i>';
+      copyBtn.setAttribute("aria-label", `Copy ${url}`);
+
+      copyBtn.onclick = async () => {
+        document.querySelectorAll(".copy-btn").forEach((btn) => {
+          btn.innerHTML = '<i class="fa-regular fa-copy"></i>';
+          btn.classList.remove("copied");
+        });
+
+        try {
+          await navigator.clipboard.writeText(url);
+          copyBtn.innerHTML = '<i class="fa-solid fa-check"></i>';
+          copyBtn.classList.add("copied");
+          setTimeout(() => {
+            copyBtn.innerHTML = '<i class="fa-regular fa-copy"></i>';
+            copyBtn.classList.remove("copied");
+          }, 2000);
+        } catch (e) {
+          console.error("Copy failed:", e);
+        }
+      };
+
+      item.appendChild(linkEl);
+      item.appendChild(copyBtn);
+      linksAreaEl.appendChild(item);
+    });
+
+    showLinkHighlights();
+  } catch (err) {
+    console.error("Populate links list error:", err);
+  }
+};
+
+const showUI = () => {
+  const pdfContainer = byId("pdf-container");
+  const loadingSpinner = byId("loading-spinner");
+  const buttonArea = byId("button-area");
+  const controls = byId("controls");
+  const canvasWrap = byId("canvas-wrap");
+
+  if (loadingSpinner) {
+    loadingSpinner.classList.add("hidden");
+    setTimeout(() => (loadingSpinner.style.display = "none"), 300);
+  }
+  if (pdfContainer) pdfContainer.classList.add("loaded");
+  if (buttonArea) buttonArea.classList.add("visible");
+  if (controls) controls.classList.add("visible");
+  if (canvasWrap) canvasWrap.addEventListener("scroll", debounce(checkFittedState, 150));
+};
+
+const toggleAttention = (enable) => {
+  for (const el of document.getElementsByClassName("zoom-btn")) {
+    el.classList.toggle("attention", !!enable);
+  }
 };
 
 const setupDragScroll = () => {
@@ -29395,10 +29340,80 @@ const setupCanvasKeyboardNav = () => {
   });
 };
 
+const setupInput = () => {
+  // Dialog
+  dialogEl = byId("links-dialog");
+  if (dialogEl) {
+    dialog = new a11y_dialog__WEBPACK_IMPORTED_MODULE_2__["default"](dialogEl);
+    const linksBtn = byId("b4");
+    dialog.on("show", () => linksBtn && linksBtn.classList.add("active"));
+    dialog.on("hide", () => linksBtn && linksBtn.classList.remove("active"));
+    dialog.on("show", populateLinksList);
+  }
+
+  setupDragScroll();
+  setupCanvasKeyboardNav();
+
+  document.addEventListener("keydown", (e) => {
+    const t = e.target;
+    const inField = t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA");
+    const linksOpen = isLinksDialogOpen();
+    if (inField || linksOpen) return;
+
+    switch (e.key) {
+      case "+":
+      case "=":
+        e.preventDefault();
+        zoomIn(0.25);
+        break;
+      case "-":
+        e.preventDefault();
+        zoomOut(0.25);
+        break;
+      case "0":
+        e.preventDefault();
+        fit();
+        break;
+      case "l":
+      case "L":
+        e.preventDefault();
+        openLinks();
+        break;
+      case "d":
+      case "D":
+        e.preventDefault();
+        download();
+        break;
+      case "Escape":
+        if (isLinksDialogOpen()) {
+          closeLinks();
+        }
+        break;
+    }
+  });
+
+  const mq = window.matchMedia("(max-width: 750px)");
+  mq.addEventListener("change", fit);
+};
+
+const setupUI = () => {
+  setTimeout(showUI, 100);
+  window.addEventListener("resize", debounce(fit, 100));
+
+  if (!is_mobile__WEBPACK_IMPORTED_MODULE_3__()) return;
+
+  toggleAttention(true);
+  notify("Hi 📱, please use the controls above.", () => toggleAttention(false));
+};
+
 const openLinks = () => {
   if (!dialogEl || !dialog) return;
-  const open = dialogEl.getAttribute("aria-hidden") === "false";
-  open ? dialog.hide() : dialog.show();
+  const open = isLinksDialogOpen();
+  if (open) {
+    dialog.hide();
+    return;
+  }
+  dialog.show();
 };
 
 const closeLinks = () => {
@@ -29416,6 +29431,25 @@ window.fit = fit;
 window.openLinks = openLinks;
 window.closeLinks = closeLinks;
 window.download = download;
+
+// Bootstrap
+document.body.classList.add("loaded");
+(async () => {
+  try {
+    pdf = await loadingTask.promise;
+    await getPage1();
+    await fit();
+    setupUI();
+    setupInput();
+  } catch (err) {
+    console.error("Error loading PDF:", err);
+    const spinner = byId("loading-spinner");
+    if (spinner) {
+      spinner.innerHTML =
+        '<p style="color: var(--color-accent);">Failed to load resume. Please refresh the page.</p>';
+    }
+  }
+})();
 
 })();
 
